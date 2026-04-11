@@ -12,6 +12,7 @@ Canonical Pi configuration for this machine.
 - `prompts/` - prompt templates
 - `skills/` - globally available local Pi skills
 - `shared-skills/` - strict skill suites that projects opt into explicitly
+- `fff/` - tracked pi-fff mode config
 
 ## Live runtime split
 
@@ -26,6 +27,7 @@ Pi still reads from `~/.pi/agent`, but the following are symlinked back to this 
 - `extensions/`
 - `prompts/`
 - `skills/`
+- `fff/config.json`
 
 Runtime-only data remains in `~/.pi/agent` and is not versioned:
 
@@ -34,6 +36,7 @@ Runtime-only data remains in `~/.pi/agent` and is not versioned:
 - `run-history.jsonl`
 - `sessions/`
 - `bin/`
+- `fff/*.mdb` search-history databases
 
 ## Skills strategy
 
@@ -46,5 +49,6 @@ Runtime-only data remains in `~/.pi/agent` and is not versioned:
 
 - Third-party Pi packages should be pinned in `settings.json`
 - Published packages are preferred over local-path packages when no live development loop is needed
+- `pi-fff` is installed in `tools-only` mode so it overrides `find` and `grep` without replacing the `pi-vim` editor
 - Custom UI behavior lives in `extensions/funky-ui.ts` with helper modules in `extensions/funky-ui/`
 - Theme colors live separately in `themes/gruvbox.json`

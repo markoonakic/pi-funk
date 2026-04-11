@@ -12,7 +12,8 @@
     "npm:pi-rewind@0.5.0",
     "npm:@victor-software-house/pi-multicodex@2.3.1",
     "npm:@tintinweb/pi-tasks@0.4.2",
-    "npm:@markoonakic/pi-working-line@0.1.2"
+    "npm:@markoonakic/pi-working-line@0.1.2",
+    "git:github.com/SamuelLHuber/pi-fff@v0.2.3"
   ],
   "defaultProvider": "openai-codex",
   "defaultModel": "gpt-5.4",
