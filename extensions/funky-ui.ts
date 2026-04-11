@@ -1,23 +1,26 @@
 import { spawnSync } from "node:child_process";
 import { basename, relative, sep } from "node:path";
-import { supportsXhigh, type Model, type ThinkingLevel } from "@mariozechner/pi-ai";
-import type { ExtensionAPI, ExtensionContext } from "@mariozechner/pi-coding-agent";
-import { truncateToWidth, visibleWidth } from "@mariozechner/pi-tui";
+import type { Model } from "@mariozechner/pi-ai";
+import { VERSION, type ExtensionAPI, type ExtensionContext } from "@mariozechner/pi-coding-agent";
+import { Loader, truncateToWidth, visibleWidth } from "@mariozechner/pi-tui";
+import { ANIMATIONS } from "./funky-ui/animations.js";
+import { composeHeaderLines, renderAsciiLogoLines } from "./funky-ui/logo.js";
+import { patchLoaderPrototype } from "./funky-ui/spinner-patch.js";
 
 type FooterState = {
 	model: Model<any> | null;
 	ctx: ExtensionContext | null;
+	starshipLeft: string | null;
 };
 
 const state: FooterState = {
 	model: null,
 	ctx: null,
+	starshipLeft: null,
 };
 
 let cachedGitRoot: { cwd: string; root: string | null } = { cwd: "", root: null };
 let requestFooterRender: (() => void) | null = null;
-const THINKING_LEVELS: ThinkingLevel[] = ["off", "minimal", "low", "medium", "high"];
-const THINKING_LEVELS_WITH_XHIGH: ThinkingLevel[] = ["off", "minimal", "low", "medium", "high", "xhigh"];
 
 function normalizeSlashes(value: string): string {
 	return value.split(sep).join("/");
@@ -64,41 +67,50 @@ function updateState(ctx: ExtensionContext): void {
 	state.model = ctx.model ?? null;
 }
 
-export function getNextThinkingLevel(model: Model<any> | null, currentLevel: string): ThinkingLevel | undefined {
-	if (!model?.reasoning) {
-		return undefined;
-	}
-
-	const levels = supportsXhigh(model) ? THINKING_LEVELS_WITH_XHIGH : THINKING_LEVELS;
-	const currentIndex = levels.indexOf(currentLevel as ThinkingLevel);
-	const nextIndex = currentIndex >= 0 ? (currentIndex + 1) % levels.length : 0;
-	return levels[nextIndex];
+function stripShellPromptEscapes(value: string): string {
+	return value.replace(/%\{/g, "").replace(/%\}/g, "").replace(/\\\[/g, "").replace(/\\\]/g, "");
 }
 
-function getFooterThinkingToken(level: string): string {
-	switch (level) {
-		case "low":
-			return "mdLink";
-		case "medium":
-			return "mdCode";
-		case "high":
-			return "accent";
-		case "xhigh":
-			return "error";
-		case "off":
-		case "minimal":
-		default:
-			return "muted";
+function resolveStarshipPromptLine(output: string): string | null {
+	const lines = output
+		.replace(/\r/g, "")
+		.split("\n")
+		.map((line) => stripShellPromptEscapes(line).trimEnd());
+
+	for (const line of lines) {
+		if (line.length > 0) {
+			return line;
+		}
 	}
+
+	return null;
 }
 
-function formatModelSegment(theme: any, thinkingLevel: string): string {
+function readStarshipLeftSegment(cwd: string): string | null {
+	const env = { ...process.env };
+	delete env.STARSHIP_SHELL;
+
+	const result = spawnSync("starship", ["prompt", "-p", cwd, "-k", "viins", "-w", "512"], {
+		encoding: "utf8",
+		stdio: ["ignore", "pipe", "ignore"],
+		env,
+	});
+
+	if (result.status !== 0) {
+		return null;
+	}
+
+	return resolveStarshipPromptLine(result.stdout);
+}
+
+function refreshStarshipLeft(ctx: ExtensionContext): void {
+	const cwd = ctx.sessionManager.getCwd() ?? process.cwd();
+	state.starshipLeft = readStarshipLeftSegment(cwd);
+}
+
+function formatModelSegment(theme: any): string {
 	const modelLabel = state.model?.name || state.model?.id || "no-model";
-	if (!state.model?.reasoning || thinkingLevel === "off") {
-		return theme.fg("accent", modelLabel);
-	}
-
-	return theme.fg("accent", modelLabel) + theme.fg(getFooterThinkingToken(thinkingLevel), ` ${thinkingLevel}`);
+	return theme.fg("muted", modelLabel);
 }
 
 function formatContextSegment(theme: any, contextPercent: number | null): string | null {
@@ -107,12 +119,6 @@ function formatContextSegment(theme: any, contextPercent: number | null): string
 	}
 
 	const roundedPercent = Math.round(contextPercent);
-	if (roundedPercent >= 90) {
-		return theme.fg("error", `${roundedPercent}%`);
-	}
-	if (roundedPercent >= 70) {
-		return theme.fg("warning", `${roundedPercent}%`);
-	}
 	return theme.fg("muted", `${roundedPercent}%`);
 }
 
@@ -122,27 +128,66 @@ function formatLocation(branch: string | null): string {
 	return branch ? `${displayPath} on ${branch}` : displayPath;
 }
 
-export default function (pi: ExtensionAPI) {
-	pi.registerShortcut("shift+tab", {
-		description: "Cycle thinking level without transient status text",
-		handler: async (ctx) => {
-			updateState(ctx);
-			const nextLevel = getNextThinkingLevel(state.model, pi.getThinkingLevel());
-			if (!nextLevel) {
-				return;
-			}
-
-			pi.setThinkingLevel(nextLevel);
-			requestFooterRender?.();
-		},
+function installHeader(ctx: ExtensionContext): void {
+	ctx.ui.setHeader((tui, theme) => {
+		return {
+			dispose() {},
+			invalidate() {},
+			render(width: number): string[] {
+				const logoLines = renderAsciiLogoLines(theme, { bold: true });
+				const versionLine = theme.fg("text", "pi ") + theme.fg("dim", `v${VERSION}`);
+				return [
+					...composeHeaderLines(logoLines, versionLine, width),
+					"",
+				];
+			},
+		};
 	});
+}
+
+function formatRightSegment(theme: any, contextPercent: number | null): string {
+	const separator = theme.fg("muted", " | ");
+	const segments = [formatModelSegment(theme), formatContextSegment(theme, contextPercent)].filter(Boolean) as string[];
+	return segments.join(separator);
+}
+
+function formatFooterLine(left: string, right: string, width: number): string {
+	if (!right) {
+		return truncateToWidth(left, width, width > 3 ? "..." : "");
+	}
+
+	const rightWidth = visibleWidth(right);
+	if (rightWidth >= width) {
+		return truncateToWidth(right, width, width > 3 ? "..." : "");
+	}
+
+	const leftWidth = visibleWidth(left);
+	if (leftWidth + 1 + rightWidth <= width) {
+		return `${left}${" ".repeat(width - leftWidth - rightWidth)}${right}`;
+	}
+
+	const leftWidthBudget = Math.max(1, width - rightWidth - 1);
+	const truncatedLeft = truncateToWidth(left, leftWidthBudget, leftWidthBudget > 3 ? "..." : "");
+	const paddingWidth = Math.max(1, width - visibleWidth(truncatedLeft) - rightWidth);
+	return `${truncatedLeft}${" ".repeat(paddingWidth)}${right}`;
+}
+
+export default function (pi: ExtensionAPI) {
+	patchLoaderPrototype(Loader.prototype as any, ANIMATIONS.pulse);
 
 	pi.on("session_start", async (_event, ctx) => {
 		updateState(ctx);
+		refreshStarshipLeft(ctx);
+		installHeader(ctx);
 
 		ctx.ui.setFooter((tui, theme, footerData) => {
 			requestFooterRender = () => tui.requestRender();
-			const unsubscribeBranch = footerData.onBranchChange(() => tui.requestRender());
+			const unsubscribeBranch = footerData.onBranchChange(() => {
+				if (state.ctx) {
+					refreshStarshipLeft(state.ctx);
+				}
+				tui.requestRender();
+			});
 			return {
 				dispose() {
 					requestFooterRender = null;
@@ -150,27 +195,12 @@ export default function (pi: ExtensionAPI) {
 				},
 				invalidate() {},
 				render(width: number): string[] {
-					const thinkingLevel = pi.getThinkingLevel();
 					const contextPercent = state.ctx?.getContextUsage()?.percent ?? null;
-					const separator = theme.fg("dim", " | ");
-					const staticSegments = [formatModelSegment(theme, thinkingLevel), formatContextSegment(theme, contextPercent)].filter(
-						Boolean,
-					) as string[];
-					const reservedWidth =
-						staticSegments.reduce((total, segment) => total + visibleWidth(segment), 0) +
-						visibleWidth(separator) * staticSegments.length;
-					const locationWidth = Math.max(1, width - reservedWidth);
-					const locationSegment = theme.fg(
-						"muted",
-						truncateToWidth(formatLocation(footerData.getGitBranch()), locationWidth, locationWidth > 3 ? "..." : ""),
-					);
-
-					const line =
-						staticSegments.length > 0
-							? `${locationSegment}${separator}${staticSegments.join(separator)}`
-							: locationSegment;
-
-					return [truncateToWidth(line, width, width > 3 ? "..." : "")];
+					const leftSegment =
+						state.starshipLeft ??
+						theme.fg("muted", formatLocation(footerData.getGitBranch()));
+					const rightSegment = formatRightSegment(theme, contextPercent);
+					return [formatFooterLine(leftSegment, rightSegment, width)];
 				},
 			};
 		});
@@ -183,11 +213,19 @@ export default function (pi: ExtensionAPI) {
 
 	pi.on("session_tree", async (_event, ctx) => {
 		updateState(ctx);
+		refreshStarshipLeft(ctx);
 		requestFooterRender?.();
 	});
 
 	pi.on("turn_end", async (_event, ctx) => {
 		updateState(ctx);
+		refreshStarshipLeft(ctx);
+		requestFooterRender?.();
+	});
+
+	pi.on("agent_end", async (_event, ctx) => {
+		updateState(ctx);
+		refreshStarshipLeft(ctx);
 		requestFooterRender?.();
 	});
 }

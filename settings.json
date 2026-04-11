@@ -1,8 +1,37 @@
 {
   "theme": "gruvbox",
-  "lastChangelogVersion": "0.65.2",
+  "lastChangelogVersion": "0.66.1",
   "defaultThinkingLevel": "xhigh",
+  "quietStartup": true,
   "packages": [
-    "npm:@burneikis/pi-vim@1.4.0"
-  ]
+    "npm:@burneikis/pi-vim@1.4.0",
+    "npm:pi-tool-display@0.3.1",
+    "npm:pi-caffeinate@2.0.0",
+    "npm:pi-subagents@0.12.4",
+    "/Users/marko/code/pi-web-access",
+    "npm:pi-rewind@0.5.0",
+    "npm:@victor-software-house/pi-multicodex@2.3.1",
+    "npm:@tintinweb/pi-tasks@0.4.2",
+    "npm:@markoonakic/pi-working-line@0.1.2"
+  ],
+  "defaultProvider": "openai-codex",
+  "defaultModel": "gpt-5.4",
+  "pi-working-line": {
+    "enabled": true,
+    "phrases": {
+      "mode": "append",
+      "verbs": []
+    },
+    "segments": {
+      "phrase": true,
+      "suffix": true,
+      "elapsed": true,
+      "thinking": true,
+      "tokens": true
+    },
+    "turnDuration": {
+      "enabled": true,
+      "thresholdMs": 30000
+    }
+  }
 }

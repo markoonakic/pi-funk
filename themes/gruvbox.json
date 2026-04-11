@@ -19,8 +19,8 @@
   "colors": {
     "accent": "purple",
     "border": "bg2",
-    "borderAccent": "purple",
-    "borderMuted": "bg1",
+    "borderAccent": "",
+    "borderMuted": "",
     "success": "green",
     "error": "red",
     "warning": "yellow",
@@ -61,12 +61,12 @@
     "syntaxType": "yellow",
     "syntaxOperator": "orange",
     "syntaxPunctuation": "fgMuted",
-    "thinkingOff": "purple",
-    "thinkingMinimal": "purple",
-    "thinkingLow": "purple",
-    "thinkingMedium": "purple",
-    "thinkingHigh": "purple",
-    "thinkingXhigh": "purple",
+    "thinkingOff": "",
+    "thinkingMinimal": "",
+    "thinkingLow": "",
+    "thinkingMedium": "",
+    "thinkingHigh": "",
+    "thinkingXhigh": "",
     "bashMode": "orange"
   }
 }
