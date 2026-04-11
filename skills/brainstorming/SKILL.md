@@ -125,3 +125,8 @@ A browser-based companion for showing mockups, diagrams, and visual options duri
 
 - **Use the browser** for visual content — mockups, wireframes, layout comparisons, architecture diagrams, side-by-side visual designs
 - **Use the terminal** for text content — requirements questions, conceptual choices, trade-off lists, scope decisions
+
+A question about a UI topic is not automatically a visual question. "What kind of wizard do you want?" is conceptual — use the terminal. "Which of these wizard layouts feels right?" is visual — use the browser.
+
+If they agree to the companion, read the detailed guide before proceeding:
+`visual-companion.md`
