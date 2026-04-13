@@ -14,7 +14,8 @@
     "npm:@tintinweb/pi-tasks",
     "npm:@markoonakic/pi-working-line",
     "git:github.com/SamuelLHuber/pi-fff",
-    "npm:@aliou/pi-processes"
+    "npm:@aliou/pi-processes",
+    "npm:pi-intercom"
   ],
   "defaultProvider": "openai-codex",
   "defaultModel": "gpt-5.4",
