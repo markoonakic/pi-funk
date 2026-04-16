@@ -15,7 +15,8 @@
     "npm:@markoonakic/pi-working-line",
     "git:github.com/SamuelLHuber/pi-fff",
     "npm:@aliou/pi-processes",
-    "npm:pi-intercom"
+    "npm:pi-intercom",
+    "npm:pi-design-deck"
   ],
   "defaultProvider": "openai-codex",
   "defaultModel": "gpt-5.4",
