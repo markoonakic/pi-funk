@@ -48,7 +48,6 @@ pi -e npm:example-package
 - `/Users/marko/code/pi-web-access` — Adds web search, content fetching, code search, and browser-backed fallback research tools.
 - `npm:pi-rewind` — Provides stronger rewind/undo support for agent-driven file changes.
 - `/Users/marko/Projects/pi-account-router` — Routes provider requests across multiple imported accounts with failover.
-- `npm:@tintinweb/pi-tasks` — Adds a tracked task list and task execution workflow inside Pi.
 - `npm:@markoonakic/pi-working-line` — Shows a compact working line and final turn summary in the TUI.
 - `git:github.com/SamuelLHuber/pi-fff` — Replaces basic search with fast git-aware `find` and `grep` tools.
 - `npm:@aliou/pi-processes` — Manages background servers, watchers, and logs from Pi.
