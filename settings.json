@@ -1,6 +1,5 @@
 {
   "theme": "gruvbox",
-  "lastChangelogVersion": "0.66.1",
   "defaultThinkingLevel": "xhigh",
   "quietStartup": true,
   "packages": [
@@ -32,12 +31,17 @@
       "suffix": true,
       "elapsed": true,
       "thinking": true,
-      "tokens": true
+      "tokens": false
     },
     "turnDuration": {
       "enabled": true,
       "thresholdMs": 30000
     }
   },
-  "hideThinkingBlock": true
+  "hideThinkingBlock": false,
+  "pi-account-router": {
+    "showFooter": true,
+    "labels": {}
+  },
+  "lastChangelogVersion": "0.67.3"
 }
