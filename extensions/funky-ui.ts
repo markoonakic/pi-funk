@@ -1,11 +1,15 @@
 import { spawnSync } from "node:child_process";
 import { basename, relative, sep } from "node:path";
 import type { Model } from "@mariozechner/pi-ai";
-import { VERSION, type ExtensionAPI, type ExtensionContext } from "@mariozechner/pi-coding-agent";
+import type { ExtensionAPI, ExtensionContext } from "@mariozechner/pi-coding-agent";
 import { Loader, truncateToWidth, visibleWidth } from "@mariozechner/pi-tui";
 import { ANIMATIONS } from "./funky-ui/animations.js";
-import { composeHeaderLines, renderAsciiLogoLines } from "./funky-ui/logo.js";
 import { patchLoaderPrototype } from "./funky-ui/spinner-patch.js";
+
+type WorkingIndicatorOptions = {
+	frames?: string[];
+	intervalMs?: number;
+};
 
 type FooterState = {
 	model: Model<any> | null;
@@ -128,21 +132,32 @@ function formatLocation(branch: string | null): string {
 	return branch ? `${displayPath} on ${branch}` : displayPath;
 }
 
-function installHeader(ctx: ExtensionContext): void {
-	ctx.ui.setHeader((tui, theme) => {
-		return {
-			dispose() {},
-			invalidate() {},
-			render(width: number): string[] {
-				const logoLines = renderAsciiLogoLines(theme, { bold: true });
-				const versionLine = theme.fg("text", "pi ") + theme.fg("dim", `v${VERSION}`);
-				return [
-					...composeHeaderLines(logoLines, versionLine, width),
-					"",
-				];
-			},
-		};
-	});
+function buildWorkingIndicator(theme: ExtensionContext["ui"]["theme"]): WorkingIndicatorOptions {
+	const lastIndex = ANIMATIONS.pulse.frames.length - 1;
+	return {
+		frames: ANIMATIONS.pulse.frames.map((frame, index) => {
+			const color = index === 0 || index === lastIndex
+				? "dim"
+				: index === 1 || index === lastIndex - 1
+					? "muted"
+					: "accent";
+			return theme.fg(color, frame);
+		}),
+		intervalMs: ANIMATIONS.pulse.interval,
+	};
+}
+
+function installWorkingIndicator(ctx: ExtensionContext): void {
+	const ui = ctx.ui as ExtensionContext["ui"] & {
+		setWorkingIndicator?: (options?: WorkingIndicatorOptions) => void;
+	};
+
+	if (typeof ui.setWorkingIndicator === "function") {
+		ui.setWorkingIndicator(buildWorkingIndicator(ctx.ui.theme));
+		return;
+	}
+
+	patchLoaderPrototype(Loader.prototype as any, ANIMATIONS.pulse);
 }
 
 function formatRightSegment(theme: any, contextPercent: number | null): string {
@@ -173,12 +188,10 @@ function formatFooterLine(left: string, right: string, width: number): string {
 }
 
 export default function (pi: ExtensionAPI) {
-	patchLoaderPrototype(Loader.prototype as any, ANIMATIONS.pulse);
-
 	pi.on("session_start", async (_event, ctx) => {
 		updateState(ctx);
 		refreshStarshipLeft(ctx);
-		installHeader(ctx);
+		installWorkingIndicator(ctx);
 
 		ctx.ui.setFooter((tui, theme, footerData) => {
 			requestFooterRender = () => tui.requestRender();
