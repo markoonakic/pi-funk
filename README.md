@@ -40,8 +40,9 @@ Runtime-only data remains in `~/.pi/agent` and is not versioned:
 
 ## Skills strategy
 
-- `skills/brainstorming/` is the only globally discovered superpowers-style skill
-- It keeps the richer brainstorming flow, including the visual-companion pattern, but does not force handoff into other skills or planning workflows
+- `skills/` holds the intentionally small set of globally discovered local skills
+- `skills/domain-model/` is the main global plan/design stress-test skill
+- `skills/improve-codebase-architecture/` stays available globally for deeper architectural review work
 - Full strict superpowers live under `shared-skills/superpowers/`
 - Projects that want the strict workflow can opt in via project `.pi/settings.json`
 
