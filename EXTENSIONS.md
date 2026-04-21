@@ -54,6 +54,7 @@ pi -e npm:example-package
 - `npm:@aliou/pi-processes`
 - `npm:pi-intercom`
 - `npm:pi-design-deck`
+- `npm:pi-thinking-steps`
 
 ## Project-only
 

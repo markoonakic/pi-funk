@@ -16,7 +16,8 @@
     "git:github.com/SamuelLHuber/pi-fff",
     "npm:@aliou/pi-processes",
     "npm:pi-intercom",
-    "npm:pi-design-deck"
+    "npm:pi-design-deck",
+    "npm:pi-thinking-steps"
   ],
   "defaultProvider": "openai-codex",
   "defaultModel": "gpt-5.4",
