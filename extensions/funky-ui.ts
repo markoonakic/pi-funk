@@ -2,9 +2,8 @@ import { spawnSync } from "node:child_process";
 import { basename, relative, sep } from "node:path";
 import type { Model } from "@mariozechner/pi-ai";
 import type { ExtensionAPI, ExtensionContext } from "@mariozechner/pi-coding-agent";
-import { Loader, truncateToWidth, visibleWidth } from "@mariozechner/pi-tui";
+import { truncateToWidth, visibleWidth } from "@mariozechner/pi-tui";
 import { ANIMATIONS } from "./funky-ui/animations.js";
-import { patchLoaderPrototype } from "./funky-ui/spinner-patch.js";
 
 type WorkingIndicatorOptions = {
 	frames?: string[];
@@ -152,12 +151,7 @@ function installWorkingIndicator(ctx: ExtensionContext): void {
 		setWorkingIndicator?: (options?: WorkingIndicatorOptions) => void;
 	};
 
-	if (typeof ui.setWorkingIndicator === "function") {
-		ui.setWorkingIndicator(buildWorkingIndicator(ctx.ui.theme));
-		return;
-	}
-
-	patchLoaderPrototype(Loader.prototype as any, ANIMATIONS.pulse);
+	ui.setWorkingIndicator?.(buildWorkingIndicator(ctx.ui.theme));
 }
 
 function formatRightSegment(theme: any, contextPercent: number | null): string {
