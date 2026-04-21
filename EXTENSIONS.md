@@ -60,3 +60,5 @@ pi -e npm:example-package
 
 - `pi-lens` *(source TBD)*
 - `git:github.com/davebcn87/pi-autoresearch`
+- `npm:@steel-experiments/pi-steel`
+- `npm:pi-annotate`
