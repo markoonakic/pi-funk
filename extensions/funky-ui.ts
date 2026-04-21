@@ -150,16 +150,8 @@ function installHeader(ctx: ExtensionContext): void {
 }
 
 function buildWorkingIndicator(theme: ExtensionContext["ui"]["theme"]): WorkingIndicatorOptions {
-	const lastIndex = ANIMATIONS.pulse.frames.length - 1;
 	return {
-		frames: ANIMATIONS.pulse.frames.map((frame, index) => {
-			const color = index === 0 || index === lastIndex
-				? "dim"
-				: index === 1 || index === lastIndex - 1
-					? "muted"
-					: "accent";
-			return theme.fg(color, frame);
-		}),
+		frames: ANIMATIONS.pulse.frames.map((frame) => theme.fg("accent", frame)),
 		intervalMs: ANIMATIONS.pulse.interval,
 	};
 }
