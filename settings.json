@@ -12,7 +12,7 @@
     "/Users/marko/Projects/pi-account-router",
     "npm:@tintinweb/pi-tasks",
     "npm:@markoonakic/pi-working-line",
-    "git:github.com/SamuelLHuber/pi-fff",
+    "git:github.com/SamuelLHuber/pi-fff@dda3f8c",
     "npm:@aliou/pi-processes",
     "npm:pi-intercom",
     "npm:pi-design-deck",
@@ -43,5 +43,5 @@
     "showFooter": true,
     "labels": {}
   },
-  "lastChangelogVersion": "0.67.3"
+  "lastChangelogVersion": "0.68.0"
 }

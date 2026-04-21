@@ -1,9 +1,10 @@
 import { spawnSync } from "node:child_process";
 import { basename, relative, sep } from "node:path";
 import type { Model } from "@mariozechner/pi-ai";
-import type { ExtensionAPI, ExtensionContext } from "@mariozechner/pi-coding-agent";
+import { VERSION, type ExtensionAPI, type ExtensionContext } from "@mariozechner/pi-coding-agent";
 import { truncateToWidth, visibleWidth } from "@mariozechner/pi-tui";
 import { ANIMATIONS } from "./funky-ui/animations.js";
+import { composeHeaderLines, renderAsciiLogoLines } from "./funky-ui/logo.js";
 
 type WorkingIndicatorOptions = {
 	frames?: string[];
@@ -131,6 +132,23 @@ function formatLocation(branch: string | null): string {
 	return branch ? `${displayPath} on ${branch}` : displayPath;
 }
 
+function installHeader(ctx: ExtensionContext): void {
+	ctx.ui.setHeader((tui, theme) => {
+		return {
+			dispose() {},
+			invalidate() {},
+			render(width: number): string[] {
+				const logoLines = renderAsciiLogoLines(theme, { bold: true });
+				const versionLine = theme.fg("text", "pi ") + theme.fg("dim", `v${VERSION}`);
+				return [
+					...composeHeaderLines(logoLines, versionLine, width),
+					"",
+				];
+			},
+		};
+	});
+}
+
 function buildWorkingIndicator(theme: ExtensionContext["ui"]["theme"]): WorkingIndicatorOptions {
 	const lastIndex = ANIMATIONS.pulse.frames.length - 1;
 	return {
@@ -185,6 +203,7 @@ export default function (pi: ExtensionAPI) {
 	pi.on("session_start", async (_event, ctx) => {
 		updateState(ctx);
 		refreshStarshipLeft(ctx);
+		installHeader(ctx);
 		installWorkingIndicator(ctx);
 
 		ctx.ui.setFooter((tui, theme, footerData) => {
