@@ -49,7 +49,7 @@ pi -e npm:example-package
 - `npm:pi-rewind` — Provides stronger rewind/undo support for agent-driven file changes.
 - `/Users/marko/Projects/pi-account-router` — Routes provider requests across multiple imported accounts with failover.
 - `npm:@markoonakic/pi-working-line` — Shows a compact working line and final turn summary in the TUI.
-- `git:github.com/SamuelLHuber/pi-fff` — Replaces basic search with fast git-aware `find` and `grep` tools.
+- `npm:@ff-labs/pi-fff` — Adds fast FFF-backed search tools, and we force `tools-only` mode so it does not replace the editor or conflict with pi-vim.
 - `npm:@aliou/pi-processes` — Manages background servers, watchers, and logs from Pi.
 - `npm:pi-intercom` — Lets Pi sessions send direct messages to each other.
 - `npm:pi-design-deck` — Opens a browser-based visual deck for comparing design or architecture options.

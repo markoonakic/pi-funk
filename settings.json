@@ -11,11 +11,11 @@
     "npm:pi-rewind",
     "/Users/marko/Projects/pi-account-router",
     "npm:@markoonakic/pi-working-line",
-    "git:github.com/SamuelLHuber/pi-fff@dda3f8c",
     "npm:@aliou/pi-processes",
     "npm:pi-intercom",
     "npm:pi-design-deck",
-    "npm:pi-thinking-steps"
+    "npm:pi-thinking-steps",
+    "npm:@ff-labs/pi-fff"
   ],
   "defaultProvider": "openai-codex",
   "defaultModel": "gpt-5.5",
