@@ -12,7 +12,6 @@ Canonical Pi configuration for this machine.
 - `prompts/` - prompt templates
 - `skills/` - globally available local Pi skills
 - `shared-skills/` - strict skill suites that projects opt into explicitly
-- `fff/` - legacy tracked pi-fff config (now obsolete after migrating to `@ff-labs/pi-fff`)
 
 ## Live runtime split
 
@@ -27,7 +26,6 @@ Pi still reads from `~/.pi/agent`, but the following are symlinked back to this 
 - `extensions/`
 - `prompts/`
 - `skills/`
-- `fff/config.json` *(legacy; no longer used by the current `@ff-labs/pi-fff` package)*
 
 Runtime-only data remains in `~/.pi/agent` and is not versioned:
 
@@ -36,7 +34,7 @@ Runtime-only data remains in `~/.pi/agent` and is not versioned:
 - `run-history.jsonl`
 - `sessions/`
 - `bin/`
-- `fff/*.mdb` search-history databases
+- `fff/` search-history databases used by `@ff-labs/pi-fff`
 
 ## Skills strategy
 
