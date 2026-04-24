@@ -1,19 +1,12 @@
 {
   "providers": {
     "openai-codex": {
-      "models": [
-        {
-          "id": "gpt-5.5",
-          "name": "gpt-5.5",
-          "reasoning": true,
-          "input": [
-            "text",
-            "image"
-          ],
+      "modelOverrides": {
+        "gpt-5.5": {
           "contextWindow": 1050000,
           "maxTokens": 128000
         }
-      ]
+      }
     }
   }
 }
