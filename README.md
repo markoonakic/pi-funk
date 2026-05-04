@@ -48,6 +48,6 @@ Runtime-only data remains in `~/.pi/agent` and is not versioned:
 
 - Third-party Pi packages should be pinned in `settings.json`
 - Published packages are preferred over local-path packages when no live development loop is needed
-- `@ff-labs/pi-fff` is installed with `PI_FFF_MODE=tools-only` so it adds FFF search tools without replacing the `pi-vim` editor
+- `@ff-labs/pi-fff` adds fast FFF-backed search tools; its UI/editor mode is optional and controlled outside this repo
 - Custom UI behavior lives in `extensions/funky-ui.ts` with helper modules in `extensions/funky-ui/`
 - Theme colors live separately in `themes/gruvbox.json`

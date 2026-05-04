@@ -3,19 +3,22 @@
   "defaultThinkingLevel": "xhigh",
   "quietStartup": true,
   "packages": [
-    "npm:@burneikis/pi-vim",
     "npm:pi-tool-display",
     "npm:pi-caffeinate",
     "npm:pi-subagents",
+    "npm:pi-goal",
+    "npm:pi-boomerang",
     "/Users/marko/code/pi-web-access",
+    "/Users/marko/Projects/pi-codex-usage",
     "npm:pi-rewind",
-    "/Users/marko/Projects/pi-account-router",
     "npm:@markoonakic/pi-working-line",
     "npm:@aliou/pi-processes",
     "npm:pi-intercom",
     "npm:pi-design-deck",
     "npm:pi-thinking-steps",
-    "npm:@ff-labs/pi-fff"
+    "npm:@injaneity/pi-computer-use",
+    "npm:pi-slopchop",
+    "git:github.com/omerxx/pi-head"
   ],
   "defaultProvider": "openai-codex",
   "defaultModel": "gpt-5.5",
@@ -38,9 +41,6 @@
     }
   },
   "hideThinkingBlock": false,
-  "pi-account-router": {
-    "showFooter": true,
-    "labels": {}
-  },
-  "lastChangelogVersion": "0.70.0"
+  "lastChangelogVersion": "0.72.1",
+  "transport": "auto"
 }

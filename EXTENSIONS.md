@@ -41,24 +41,32 @@ pi -e npm:example-package
 
 ## Global
 
-- `npm:@burneikis/pi-vim` — Vim-style modal editing for Pi’s input editor.
 - `npm:pi-tool-display` — Richer TUI rendering for tool executions and tool results.
 - `npm:pi-caffeinate` — Keeps the machine awake while Pi is running.
 - `npm:pi-subagents` — Lets Pi delegate work to helper agents and chains.
+- `npm:pi-goal` — Adds persistent `/goal` autonomous continuation for long-running objectives, with token budgets, pause/resume/clear controls, and session-local goal state.
+- `npm:pi-boomerang` — Runs `/boomerang` autonomous tasks, prompt-template chains, rethrows, and context collapse into handoff summaries to save future tokens.
 - `/Users/marko/code/pi-web-access` — Adds web search, content fetching, code search, and browser-backed fallback research tools.
+- `/Users/marko/Projects/pi-codex-usage` — Adds `/codex-usage` plus `Ctrl+Shift+U` to show native Codex usage windows in a modal.
 - `npm:pi-rewind` — Provides stronger rewind/undo support for agent-driven file changes.
-- `/Users/marko/Projects/pi-account-router` — Routes provider requests across multiple imported accounts with failover.
 - `npm:@markoonakic/pi-working-line` — Shows a compact working line and final turn summary in the TUI.
-- `npm:@ff-labs/pi-fff` — Adds fast FFF-backed search tools, and we force `tools-only` mode so it does not replace the editor or conflict with pi-vim.
+- `npm:@injaneity/pi-computer-use` — Adds macOS computer-use tools for windows, screenshots, semantic AX refs, and browser/window interaction.
 - `npm:@aliou/pi-processes` — Manages background servers, watchers, and logs from Pi.
 - `npm:pi-intercom` — Lets Pi sessions send direct messages to each other.
 - `npm:pi-design-deck` — Opens a browser-based visual deck for comparing design or architecture options.
 - `npm:pi-thinking-steps` — Re-renders visible model thinking in collapsed, summary, or expanded modes.
+- `git:github.com/omerxx/pi-head` — Adds `/head`, a full-screen viewer that jumps to the start of the latest assistant response for easy scrolling.
 
 ## Project-only
 
 - `pi-lens` *(source TBD)* — Project-local lens/index/review workflow that should stay opt-in.
+- `npm:@ff-labs/pi-fff` — Use only in selected repos; keep it off globally because its native background indexer can segfault on huge directories like `~`.
 - `git:github.com/davebcn87/pi-autoresearch` — Autonomous experiment loop for benchmark, log, and keep-or-revert optimization runs.
 - `npm:@steel-experiments/pi-steel` — Pi-native Steel browser automation for navigating, scraping, and interacting with live sites.
 - `npm:pi-annotate` — Browser-based visual annotation workflow that captures elements, comments, screenshots, and style edits for UI fixes.
 - `npm:pi-poster` — Renders single-file React posters, cards, dashboards, and one-page PDFs as per-project visual assets.
+- `git:github.com/kostyay/pi-k-excalidraw` — Native Excalidraw diagram preview/drawing tools and `/excalidraw`; keep project-local because it opens a Glimpse webview and writes repo-specific `.pi/excalidraw-diagrams/` assets.
+- `npm:pi-better-openai` — OpenAI subscription workflow helper; only the `openai_image`/`/openai-image` Codex-auth image generation is useful here, so keep project-local for now and consider extracting that image-only functionality into a local extension later.
+- `npm:pi-hosts` — SSH host inventory, remote exec, facts caching, and audit trail for server-heavy projects; reconsider when it updates away from the old pinned Pi core dependency.
+- `/Users/marko/Projects/pi-account-router` — Multi-account Codex/router extension kept locally for future re-enable; currently disabled from the global runtime config.
+- `npm:@marcfargas/pi-test-harness` — Pi extension testing library for extension/package repos; use as a repo-local devDependency (for example in `pi-account-router`), not as a runtime Pi package in `.pi/settings.json`.

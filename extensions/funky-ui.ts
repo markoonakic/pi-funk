@@ -26,6 +26,10 @@ const state: FooterState = {
 let cachedGitRoot: { cwd: string; root: string | null } = { cwd: "", root: null };
 let requestFooterRender: (() => void) | null = null;
 
+const SESSION_NAME_MAX_WIDTH = 32;
+const SESSION_NAME_MIN_WIDTH = 8;
+const SESSION_NAME_WIDTH_RATIO = 0.25;
+
 function normalizeSlashes(value: string): string {
 	return value.split(sep).join("/");
 }
@@ -126,6 +130,59 @@ function formatContextSegment(theme: any, contextPercent: number | null): string
 	return theme.fg("muted", `${roundedPercent}%`);
 }
 
+function sanitizeFooterSegment(value: string): string {
+	return value
+		.replace(/\x1b\[[0-9;]*m/g, "")
+		.replace(/[\r\n\t]/g, " ")
+		.replace(/[\x00-\x1f\x7f]/g, "")
+		.replace(/ +/g, " ")
+		.trim();
+}
+
+function getSessionName(): string | null {
+	const name = state.ctx?.sessionManager.getSessionName();
+	if (!name) {
+		return null;
+	}
+
+	const sanitized = sanitizeFooterSegment(name);
+	return sanitized.length > 0 ? sanitized : null;
+}
+
+function getSessionNameWidthBudget(
+	width: number,
+	reservedRightWidth: number,
+	separatorWidth: number,
+	sessionNameWidth: number,
+): number {
+	const maxRightWidth = Math.max(0, width - 1);
+	const availableWidth = maxRightWidth - reservedRightWidth - separatorWidth;
+	if (availableWidth <= 0) {
+		return 0;
+	}
+
+	const preferredWidth = Math.min(
+		SESSION_NAME_MAX_WIDTH,
+		Math.max(SESSION_NAME_MIN_WIDTH, Math.floor(width * SESSION_NAME_WIDTH_RATIO)),
+	);
+	const widthBudget = Math.min(availableWidth, preferredWidth);
+
+	if (sessionNameWidth <= widthBudget) {
+		return sessionNameWidth;
+	}
+
+	return widthBudget >= SESSION_NAME_MIN_WIDTH ? widthBudget : 0;
+}
+
+function formatSessionNameSegment(theme: any, name: string, maxWidth: number): string | null {
+	if (maxWidth <= 0) {
+		return null;
+	}
+
+	const truncatedName = truncateToWidth(name, maxWidth, maxWidth > 3 ? "..." : "");
+	return truncatedName ? theme.fg("muted", truncatedName) : null;
+}
+
 function formatLocation(branch: string | null): string {
 	const cwd = state.ctx?.sessionManager.getCwd() ?? process.cwd();
 	const displayPath = formatDisplayPath(cwd);
@@ -164,9 +221,26 @@ function installWorkingIndicator(ctx: ExtensionContext): void {
 	ui.setWorkingIndicator?.(buildWorkingIndicator(ctx.ui.theme));
 }
 
-function formatRightSegment(theme: any, contextPercent: number | null): string {
+function formatRightSegment(theme: any, contextPercent: number | null, width: number): string {
 	const separator = theme.fg("muted", " | ");
-	const segments = [formatModelSegment(theme), formatContextSegment(theme, contextPercent)].filter(Boolean) as string[];
+	const coreSegments = [
+		formatModelSegment(theme),
+		formatContextSegment(theme, contextPercent),
+	].filter(Boolean) as string[];
+	const coreRightSegment = coreSegments.join(separator);
+	const sessionName = getSessionName();
+	const sessionNameWidth = sessionName
+		? getSessionNameWidthBudget(
+			width,
+			visibleWidth(coreRightSegment),
+			visibleWidth(separator),
+			visibleWidth(sessionName),
+		)
+		: 0;
+	const sessionNameSegment = sessionName
+		? formatSessionNameSegment(theme, sessionName, sessionNameWidth)
+		: null;
+	const segments = [sessionNameSegment, ...coreSegments].filter(Boolean) as string[];
 	return segments.join(separator);
 }
 
@@ -217,7 +291,7 @@ export default function (pi: ExtensionAPI) {
 					const leftSegment =
 						state.starshipLeft ??
 						theme.fg("muted", formatLocation(footerData.getGitBranch()));
-					const rightSegment = formatRightSegment(theme, contextPercent);
+					const rightSegment = formatRightSegment(theme, contextPercent, width);
 					return [formatFooterLine(leftSegment, rightSegment, width)];
 				},
 			};
