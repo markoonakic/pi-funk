@@ -10,15 +10,25 @@
     "npm:pi-boomerang",
     "/Users/marko/code/pi-web-access",
     "/Users/marko/Projects/pi-codex-usage",
+    "git:github.com/markoonakic/pi-codex-fast-mode",
     "npm:pi-rewind",
-    "npm:@markoonakic/pi-working-line",
+    "/Users/marko/Projects/pi-working-line",
     "npm:@aliou/pi-processes",
     "npm:pi-intercom",
     "npm:pi-design-deck",
     "npm:pi-thinking-steps",
     "npm:@injaneity/pi-computer-use",
     "npm:pi-slopchop",
-    "git:github.com/omerxx/pi-head"
+    "git:github.com/omerxx/pi-head",
+    {
+      "source": "git:github.com/mattpocock/skills",
+      "extensions": [],
+      "skills": [
+        "skills/productivity/grill-me"
+      ],
+      "prompts": [],
+      "themes": []
+    }
   ],
   "defaultProvider": "openai-codex",
   "defaultModel": "gpt-5.5",
@@ -41,6 +51,6 @@
     }
   },
   "hideThinkingBlock": false,
-  "lastChangelogVersion": "0.72.1",
+  "lastChangelogVersion": "0.74.0",
   "transport": "auto"
 }
