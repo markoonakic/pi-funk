@@ -49,7 +49,7 @@ pi -e npm:example-package
 - `/Users/marko/code/pi-web-access` — Adds web search, content fetching, code search, and browser-backed fallback research tools.
 - `/Users/marko/Projects/pi-codex-usage` — Adds `/codex-usage` plus `Ctrl+Shift+U` to show native Codex usage windows in a modal.
 - `git:github.com/markoonakic/pi-codex-fast-mode` — Minimal `/fast` extension for OpenAI Codex; injects only `service_tier: "priority"` for configured `openai-codex` models (`gpt-5.4`, `gpt-5.5`) and avoids footer, usage, image, verbosity, or settings UI changes.
-- `npm:pi-rewind` — Provides stronger rewind/undo support for agent-driven file changes.
+- `npm:pi-rewind-hook` — Provides rewind/checkpoint support for agent-driven file changes via hidden session metadata and a single `refs/pi-rewind/store` Git ref; replaces `npm:pi-rewind` because it avoids creating a checkpoint on ordinary read-only session resume, which keeps KittyLitter/mobile thread opens responsive.
 - `/Users/marko/Projects/pi-working-line` — Local checked-out source for `@markoonakic/pi-working-line`; shows a compact working line and final turn summary in the TUI. Loaded from source so its Pi SDK imports can track the `@earendil-works/*` namespace before the npm package is republished.
 - `npm:@injaneity/pi-computer-use` — Adds macOS computer-use tools for windows, screenshots, semantic AX refs, and browser/window interaction.
 - `npm:@aliou/pi-processes` — Manages background servers, watchers, and logs from Pi.
