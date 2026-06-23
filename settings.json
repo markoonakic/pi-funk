@@ -3,28 +3,59 @@
   "defaultThinkingLevel": "xhigh",
   "quietStartup": true,
   "packages": [
-    "npm:pi-tool-display",
+    "/Users/marko/Projects/pi-funky-ui",
     "npm:pi-caffeinate",
-    "npm:pi-subagents",
-    "npm:pi-goal",
+    "git:github.com/nicobailon/pi-subagents",
+    "npm:pi-codex-goal",
     "npm:pi-boomerang",
-    "/Users/marko/code/pi-web-access",
+    "npm:@howaboua/pi-auto-trees",
+    "/Users/marko/Projects/pi-web-access",
+    "npm:@ff-labs/pi-fff",
+    "git:github.com/davebcn87/pi-autoresearch",
+    "git:github.com/kostyay/pi-k-excalidraw",
+    "npm:pi-design-deck",
+    "git:github.com/nicobailon/visual-explainer",
+    "npm:pi-poster",
     "/Users/marko/Projects/pi-codex-usage",
     "git:github.com/markoonakic/pi-codex-fast-mode",
     "npm:pi-rewind-hook",
     "/Users/marko/Projects/pi-working-line",
     "npm:@aliou/pi-processes",
     "npm:pi-intercom",
-    "npm:pi-design-deck",
+    "npm:pi-messenger",
     "npm:pi-thinking-steps",
     "npm:@injaneity/pi-computer-use",
-    "npm:pi-slopchop",
     "git:github.com/omerxx/pi-head",
+    "npm:@juicesharp/rpiv-todo",
+    "npm:@juicesharp/rpiv-btw",
     {
       "source": "git:github.com/mattpocock/skills",
       "extensions": [],
       "skills": [
         "skills/productivity/grill-me"
+      ],
+      "prompts": [],
+      "themes": []
+    },
+    {
+      "source": "git:github.com/rjs/shaping-skills",
+      "extensions": [],
+      "skills": [
+        "+shaping"
+      ],
+      "prompts": [],
+      "themes": []
+    },
+    "/Users/marko/Projects/pi-account-router",
+    "/Users/marko/Projects/pi-root-resume",
+    "/Users/marko/Projects/pi-peon-ping",
+    "npm:pi-mcp-adapter",
+    "npm:pi-dynamic-workflows",
+    {
+      "source": "git:github.com/browser-use/browser-use",
+      "extensions": [],
+      "skills": [
+        "skills/browser-use"
       ],
       "prompts": [],
       "themes": []
@@ -52,5 +83,8 @@
   },
   "hideThinkingBlock": false,
   "lastChangelogVersion": "0.74.0",
-  "transport": "auto"
+  "transport": "auto",
+  "pi-account-router": {
+    "showFooter": true
+  }
 }

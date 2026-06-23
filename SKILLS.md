@@ -6,12 +6,14 @@ It is documentation only.
 It does not control runtime loading.
 
 ## Runtime loading
+
 - **Global live config:** `settings.json`
 - **Project-local config:** `.pi/settings.json`
 - **Global local skills:** `skills/`
 - **One-run explicit load:** `pi --skill <skill-file-or-directory>`
 
 ## Status meanings
+
 - **global** — enabled in the live global config
 - **project-only** — should only be enabled in selected projects
 - **deferred** — useful later, but not enabled until workflow details are decided
@@ -20,6 +22,7 @@ It does not control runtime loading.
 ## How to enable
 
 ### Global package skill
+
 Add a filtered package entry to `settings.json`:
 
 ```json
@@ -37,6 +40,7 @@ Add a filtered package entry to `settings.json`:
 ```
 
 ### Project-only package skill
+
 Add a filtered package entry to `.pi/settings.json` in the project:
 
 ```json
@@ -54,9 +58,11 @@ Add a filtered package entry to `.pi/settings.json` in the project:
 ```
 
 ### Local custom skill
+
 Put a skill directory with `SKILL.md` under `skills/`.
 
 ### One-run explicit load
+
 ```bash
 pi --skill /path/to/skill-or-skills-dir
 ```
@@ -64,12 +70,19 @@ pi --skill /path/to/skill-or-skills-dir
 ## Global
 
 - `pi-subagents` — Delegation workflows for the `subagent(...)` tool, chains, parallel tasks, async runs, and agent management.
-- `librarian` — Evidence-backed open-source library research with GitHub permalinks; provided by `/Users/marko/code/pi-web-access`.
+- `librarian` — Evidence-backed open-source library research with GitHub permalinks; provided by `/Users/marko/Projects/pi-web-access`.
 - `pi-processes` — Background process management patterns for dev servers, watchers, test runners, and logs.
 - `pi-intercom` — Coordination patterns for multiple local Pi sessions.
-- `design-deck` — Workflow for visual option decks and architecture/UI/code comparisons.
-- `computer-use` — Workflow for macOS GUI/window automation with screenshots, AX refs, clicks, and typing.
 - `grill-me` — Generic planning/design grilling interview from `git:github.com/mattpocock/skills`; installed globally because it is not project-specific.
+- `shaping` — Collaborative shaping methodology for iterating on requirements, solution options, fit checks, and slices before implementation; loaded globally from `git:github.com/rjs/shaping-skills` with the `+shaping` filter.
+- `visual-explainer` — Generates self-contained HTML diagrams, visual plans, diff/plan reviews, project recaps, fact checks, slide decks, and shareable pages; now loaded globally from `git:github.com/nicobailon/visual-explainer`.
+- `autoresearch-create` — Creates a structured autonomous research/experiment plan; loaded globally from `git:github.com/davebcn87/pi-autoresearch`.
+- `autoresearch-finalize` — Finalizes and summarizes autonomous research/experiment results; loaded globally from `git:github.com/davebcn87/pi-autoresearch`.
+- `autoresearch-hooks` — Guidance for using the autoresearch experiment hooks safely; loaded globally from `git:github.com/davebcn87/pi-autoresearch`.
+- `design-deck` — Workflow for visual option decks and architecture/UI/code comparisons; now loaded globally with `npm:pi-design-deck`.
+- `poster` — Creates single-file React posters/cards/dashboards/PDF-ready visuals; loaded globally from `npm:pi-poster`.
+- `pi-messenger-crew` — Crew/messenger coordination workflow for multi-agent work across Pi sessions; loaded globally from `npm:pi-messenger`.
+- `browser-use` — Browser automation CLI guidance for navigating sites, inspecting page state, interacting with elements, screenshots, extraction, sessions, cloud browsers, and tunnels. Loaded globally from `git:github.com/browser-use/browser-use` with a filtered package entry that enables only `skills/browser-use`, so it remains updateable via `pi update`.
 
 ## Global local skills
 
