@@ -1,2 +1,28 @@
 .DS_Store
 .pi/
+
+# Local runtime/generated state
+.expect/
+.poster/output/
+*.bak.*
+
+# Root scratch artifacts
+context.md
+research.md
+plan.md
+progress.md
+
+# Local documentation scratch/reference
+/docs/
+
+# Research/report artifacts pending cleanup
+analysis/
+reports/
+research/
+review/
+audits/
+config-recon/
+readonly-research/
+fork-diagnosis/
+interrupt-investigation/
+ui/
