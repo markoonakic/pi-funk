@@ -5,6 +5,8 @@
 .expect/
 .poster/output/
 local-extensions/
+/extensions/herdr-agent-state.ts
+/extensions/herdr-pi-session-name-sync.ts
 *.bak.*
 
 # Root scratch artifacts
