@@ -73,7 +73,11 @@ pi --skill /path/to/skill-or-skills-dir
 
 ## Global local skills
 
-- None currently. `skills/` is intentionally empty unless a custom local skill is explicitly approved for global use.
+- `second-brain` — Global skill for the canonical second-brain vault at `/Users/marko/ai-vault`; use when a task needs durable personal/project knowledge, summaries, meetings, people, daily notes, research, references, prior context, or vault note creation. Runtime path: `skills/second-brain/SKILL.md` (`/Users/marko/.pi/agent/skills/second-brain/SKILL.md` via symlink).
+- `summarize` — Reysu `ai-life-skills` content summarizer adapted as a global Pi skill; summarizes YouTube videos, articles, PDFs, EPUBs/books, podcasts, lectures, or pasted/vault text into linked Obsidian notes. Runtime path: `skills/summarize/SKILL.md`; reference copy in `/Users/marko/ai-vault/09 Skills/summarize/SKILL.md`.
+- `summarize-call` — Reysu `ai-life-skills` meeting/call skill adapted as a global Pi skill; transcribes/summarizes recordings and writes call notes, transcripts, daily entries, and person notes. Runtime path: `skills/summarize-call/SKILL.md`; reference copy in `/Users/marko/ai-vault/09 Skills/summarize-call/SKILL.md`.
+- `pi-extension-intake` — Intake workflow for evaluating Pi extensions, packages, skills, and external Pi repos against this live config; read-only by default with an explicit write-phase gate. Runtime path: `skills/pi-extension-intake/SKILL.md`.
+- `readonly-root-cause-investigation` — Read-only investigation workflow for root-cause analysis, evidence capture, and fix plans without changing files unless explicitly approved. Runtime path: `skills/readonly-root-cause-investigation/SKILL.md`.
 
 ## Project-only
 
