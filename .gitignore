@@ -4,6 +4,7 @@
 # Local runtime/generated state
 .expect/
 .poster/output/
+local-extensions/
 *.bak.*
 
 # Root scratch artifacts

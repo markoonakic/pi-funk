@@ -44,6 +44,18 @@ Most durable runtime surfaces already point from `/Users/marko/.pi/agent` into t
 
 `settings.json` is the exception: `/Users/marko/.pi/agent/settings.json` is currently a separate live file and differs from this repo's `settings.json`. Do not treat repo `settings.json` as fully live/canonical until reconciliation and symlink migration are completed.
 
+## Extension placement policy
+
+`extensions/` is the live global extension directory because `/Users/marko/.pi/agent/extensions` points here. Anything loadable there can affect every Pi session.
+
+Use `extensions/` only for package config sidecars, tiny reviewed one-file hooks, and vendor/installer-managed hooks that must live in the global extension directory.
+
+Maintained custom extension/package source belongs in `/Users/marko/Projects/<pi-name>` and should eventually be loaded through npm, git, or another public package source. Local `/Users/marko/Projects/...` paths are local-source exceptions/blockers, not public-portable config.
+
+Use `local-extensions/` only for untracked private experiments or machine-specific hooks that should not be committed.
+
+Avoid `archived-extensions/`; Git history is the archive.
+
 ## Settings migration plan
 
 Phase 1: reconcile, no symlink yet.
