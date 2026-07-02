@@ -46,30 +46,30 @@ pi -e npm:example-package
 
 ## Global
 
-Entries under `/Users/marko/Projects/...` are current machine-local source checkouts and portability blockers for this public repo. Prefer npm/git package sources when available; keep these paths only as an explicit snapshot of this machine's current Pi setup.
+Durable global package entries use npm/git sources. Local checkouts under `/Users/marko/Projects/...` are dev-only working copies, not portable global config.
 
 Skill-only package entries from `settings.json` are cataloged in `SKILLS.md` instead of duplicated here.
 
-- `/Users/marko/Projects/pi-funky-ui` — Local custom Pi UI layer combining Claude-style tool/message rendering with the Funky UI header/footer/working indicator. Replaces `npm:pi-claude-style-tools` globally; intentionally excludes upstream `spinner.ts` so `/Users/marko/Projects/pi-working-line` remains the owner of `ctx.ui.setWorkingMessage()`.
+- `git:github.com/markoonakic/pi-funky-ui` — Custom Pi UI layer combining Claude-style tool/message rendering with the Funky UI header/footer/working indicator. Replaces `npm:pi-claude-style-tools` globally; intentionally excludes upstream `spinner.ts` so `pi-working-line` remains the owner of `ctx.ui.setWorkingMessage()`.
 - `npm:pi-caffeinate` — Keeps the machine awake while Pi is running.
-- `git:github.com/nicobailon/pi-subagents` — Lets Pi delegate work to helper agents and chains. Loaded from GitHub default branch instead of npm so local Pi can track upstream releases before npm dist-tags catch up.
+- `git:github.com/nicobailon/pi-subagents` — Global `subagent` package for disposable helper agents, chains, async runs, and compact above-editor run status. Local first-party replacement remains dev-only until explicitly approved.
 - `npm:pi-codex-goal` — Adds Codex-style persistent `/goal` tracking and continuation for long-running objectives, plus `/create-goal` and the `get_goal`, `create_goal`, and `update_goal` tools; goal state is stored in session custom entries and follows resume/fork/compaction behavior.
 - `npm:pi-boomerang` — Runs `/boomerang` autonomous tasks, prompt-template chains, rethrows, and context collapse into handoff summaries to save future tokens.
 - `npm:@howaboua/pi-auto-trees` — Adds `/marker` and `/end` for long single-session workflows the user likes: `/end` uses Pi session-tree branch summarization to roll a completed increment back to the marker, then advances the marker so the session keeps useful context without implementation noise.
-- `/Users/marko/Projects/pi-web-access` — Adds web search, content fetching, code search, and browser-backed fallback research tools.
+- `git:github.com/markoonakic/pi-web-access@feat/openai-native-web-search` — Adds web search, content fetching, code search, and browser-backed fallback research tools.
 - `npm:@ff-labs/pi-fff` — Adds the FFF file-finding/index workflow for selected-file context and fast file discovery. Now enabled globally by request; watch for its native/background indexer behavior in very large directories.
 - `git:github.com/davebcn87/pi-autoresearch` — Adds autonomous research/experiment-loop tools for benchmarking a change, logging results, and keeping or reverting optimization candidates. Now enabled globally by request; do not co-load with `pi-evo-research` because both expose `init_experiment`, `run_experiment`, and `log_experiment`.
 - `git:github.com/kostyay/pi-k-excalidraw` — Adds native Excalidraw diagram preview/drawing support and `/excalidraw`, opening a Glimpse webview and writing diagram assets under project-local `.pi/excalidraw-diagrams/`.
 - `npm:pi-design-deck` — Opens a browser-based visual deck for comparing design or architecture options; now enabled globally by request for reusable visual decision decks.
 - `git:github.com/nicobailon/visual-explainer` — Agent skill plus prompt templates for self-contained HTML diagrams, visual reviews, plan reviews, recaps, slides, and shareable pages; now enabled globally by request.
 - `npm:pi-poster` — Renders single-file React posters, cards, dashboards, and one-page PDFs as visual assets; now enabled globally by request.
-- `/Users/marko/Projects/pi-codex-usage` — Adds `/codex-usage` plus `Ctrl+Shift+U` to show native Codex usage windows in a modal.
+- `git:github.com/markoonakic/pi-codex-usage` — Adds `/codex-usage` plus `Ctrl+Shift+U` to show native Codex usage windows in a modal.
 - `git:github.com/markoonakic/pi-codex-fast-mode` — Minimal `/fast` extension for OpenAI Codex; injects only `service_tier: "priority"` for configured `openai-codex` models (`gpt-5.4`, `gpt-5.5`) and avoids footer, usage, image, verbosity, or settings UI changes.
-- `/Users/marko/Projects/pi-account-router` — Routes Codex requests across multiple Pi OAuth accounts with transparent failover.
-- `/Users/marko/Projects/pi-root-resume` — Adds `/rr` and `/root-resume`, a root-only fuzzy session manager that scans session JSONL files directly with bounded memory so large project session directories can be resumed without loading every fork, clone, or subagent session.
-- `/Users/marko/Projects/pi-peon-ping` — Adds `/peon` plus sound and desktop notifications for Pi lifecycle events using Peon Ping/OpenPeon sound packs. Config and downloaded pack state live under `~/.config/peon-ping`; subagent sounds are suppressed by default to avoid duplicate completion alerts.
+- `git:github.com/markoonakic/pi-account-router` — Routes Codex requests across multiple Pi OAuth accounts with transparent failover.
+- `git:github.com/markoonakic/pi-root-resume` — Adds `/rr` and `/root-resume`, a root-only fuzzy session manager that scans session JSONL files directly with bounded memory so large project session directories can be resumed without loading every fork, clone, or subagent session.
+- `git:github.com/markoonakic/pi-peon-ping` — Adds `/peon` plus sound and desktop notifications for Pi lifecycle events using Peon Ping/OpenPeon sound packs. Config and downloaded pack state live under `~/.config/peon-ping`; subagent sounds are suppressed by default to avoid duplicate completion alerts.
 - `npm:pi-rewind-hook` — Provides rewind/checkpoint support for agent-driven file changes via hidden session metadata and a single `refs/pi-rewind/store` Git ref; replaces `npm:pi-rewind` because it avoids creating a checkpoint on ordinary read-only session resume, which keeps KittyLitter/mobile thread opens responsive.
-- `/Users/marko/Projects/pi-working-line` — Local checked-out source for `@markoonakic/pi-working-line`; shows a compact working line and final turn summary in the TUI. Loaded from source so its Pi SDK imports can track the `@earendil-works/*` namespace before the npm package is republished.
+- `git:github.com/markoonakic/pi-working-line` — Shows a compact working line and final turn summary in the TUI.
 - `npm:@injaneity/pi-computer-use` — Adds macOS computer-use tools for windows, screenshots, semantic AX refs, and browser/window interaction.
 - `npm:@aliou/pi-processes` — Manages background servers, watchers, and logs from Pi. Prefer this for non-interactive background servers/watchers and process-registry/log workflows.
 - `npm:pi-intercom` — Lets Pi sessions send direct messages to each other.
@@ -83,6 +83,7 @@ Skill-only package entries from `settings.json` are cataloged in `SKILLS.md` ins
 
 ## Project-only
 
+- `pi-agent-team` — Dev-only prototype; removed from global Pi setup. Keep any local checkout out of durable config.
 - `pi-lens` *(source TBD)* — Project-local lens/index/review workflow that should stay opt-in.
 - `npm:@steel-experiments/pi-steel` — Pi-native Steel browser automation for navigating, scraping, and interacting with live sites.
 - `npm:pi-annotate` — Browser-based visual annotation workflow that captures elements, comments, screenshots, and style edits for UI fixes.

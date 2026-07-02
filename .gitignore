@@ -1,5 +1,6 @@
 .DS_Store
 .pi/
+.pi-subagents/
 
 # Local runtime/generated state
 .expect/

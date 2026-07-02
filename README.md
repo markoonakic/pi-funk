@@ -24,8 +24,8 @@ Runtime/private state that must not be committed:
 - `/Users/marko/.pi/agent/auth.json`
 - `/Users/marko/.pi/agent/sessions/`
 - `/Users/marko/.pi/agent/run-history.jsonl`
-- `/Users/marko/.pi/agent/git/`
-- `/Users/marko/.pi/agent/npm/`
+- `~/.pi/agent/git/`
+- `~/.pi/agent/npm/`
 - `/Users/marko/.pi/agent/mcp-cache.json`
 - `/Users/marko/.pi/agent/mcp-npx-cache.json`
 - `/Users/marko/.pi/agent/pi-account-router-*.json`
@@ -50,7 +50,7 @@ Most durable runtime surfaces already point from `/Users/marko/.pi/agent` into t
 
 Use `extensions/` only for package config sidecars, tiny reviewed one-file hooks, and vendor/installer-managed hooks that must live in the global extension directory.
 
-Maintained custom extension/package source belongs in `/Users/marko/Projects/<pi-name>` and should eventually be loaded through npm, git, or another public package source. Local `/Users/marko/Projects/...` paths are local-source exceptions/blockers, not public-portable config.
+Durable custom packages in `settings.json` should use npm/git sources. Local checkouts under `/Users/marko/Projects/<pi-name>` are dev-only working copies, not public-portable global config.
 
 Use `local-extensions/` only for untracked private experiments or machine-specific hooks that should not be committed.
 
@@ -80,7 +80,7 @@ Do not mix `PI_CODING_AGENT_DIR=/Users/marko/.config/pi` with default `/Users/ma
 - This repo is public.
 - Do not commit auth, sessions, caches, run history, account-router state/cache, generated reports, or other runtime state.
 - Do not commit `lastChangelogVersion` as meaningful config or as a standalone/noise change.
-- Do not add new absolute `/Users/marko/Projects/...` package paths. Prefer npm, git, public package sources, or untracked local overrides.
+- Do not add absolute `/Users/marko/Projects/...` package paths to durable config. Use npm/git sources; keep local checkouts dev-only.
 - `docs/` is ignored local scratch/reference material, not committed canonical documentation.
 - `.poster/` is not yet classified; `.poster/output/` is generated and ignored.
 

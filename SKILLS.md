@@ -70,7 +70,7 @@ pi --skill /path/to/skill-or-skills-dir
 ## Global
 
 - `pi-subagents` — Delegation workflows for the `subagent(...)` tool, chains, parallel tasks, async runs, and agent management.
-- `librarian` — Evidence-backed open-source library research with GitHub permalinks; provided by `/Users/marko/Projects/pi-web-access`.
+- `librarian` — Evidence-backed open-source library research with GitHub permalinks; provided by `git:github.com/markoonakic/pi-web-access@feat/openai-native-web-search`.
 - `pi-processes` — Background process management patterns for dev servers, watchers, test runners, and logs.
 - `pi-intercom` — Coordination patterns for multiple local Pi sessions.
 - `grill-me` — Generic planning/design grilling interview from `git:github.com/mattpocock/skills`; installed globally because it is not project-specific.
