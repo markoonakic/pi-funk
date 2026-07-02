@@ -70,7 +70,6 @@ Skill-only package entries from `settings.json` are cataloged in `SKILLS.md` ins
 - `git:github.com/markoonakic/pi-peon-ping` — Adds `/peon` plus sound and desktop notifications for Pi lifecycle events using Peon Ping/OpenPeon sound packs. Config and downloaded pack state live under `~/.config/peon-ping`; subagent sounds are suppressed by default to avoid duplicate completion alerts.
 - `npm:pi-rewind-hook` — Provides rewind/checkpoint support for agent-driven file changes via hidden session metadata and a single `refs/pi-rewind/store` Git ref; replaces `npm:pi-rewind` because it avoids creating a checkpoint on ordinary read-only session resume, which keeps KittyLitter/mobile thread opens responsive.
 - `git:github.com/markoonakic/pi-working-line` — Shows a compact working line and final turn summary in the TUI.
-- `npm:@injaneity/pi-computer-use` — Adds macOS computer-use tools for windows, screenshots, semantic AX refs, and browser/window interaction.
 - `npm:@aliou/pi-processes` — Manages background servers, watchers, and logs from Pi. Prefer this for non-interactive background servers/watchers and process-registry/log workflows.
 - `npm:pi-intercom` — Lets Pi sessions send direct messages to each other.
 - `npm:pi-messenger` — Adds the `pi_messenger` tool and `/messenger` overlay for agent presence, chat, file reservations, and Crew task orchestration across Pi sessions sharing a project.

@@ -24,7 +24,6 @@
     "npm:pi-intercom",
     "npm:pi-messenger",
     "npm:pi-thinking-steps",
-    "npm:@injaneity/pi-computer-use",
     "git:github.com/omerxx/pi-head",
     "npm:@juicesharp/rpiv-todo",
     "npm:@juicesharp/rpiv-btw",
