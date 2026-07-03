@@ -8,5 +8,6 @@
   },
   "intercomBridge": {
     "mode": "always"
-  }
+  },
+  "maxSubagentSpawnsPerSession": 999999
 }

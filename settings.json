@@ -6,6 +6,7 @@
     "git:github.com/markoonakic/pi-funky-ui",
     "npm:pi-caffeinate",
     "git:github.com/nicobailon/pi-subagents",
+    "npm:pi-lens",
     "npm:pi-codex-goal",
     "npm:pi-boomerang",
     "npm:@howaboua/pi-auto-trees",
@@ -58,7 +59,17 @@
       ],
       "prompts": [],
       "themes": []
-    }
+    },
+    {
+      "source": "git:github.com/ogulcancelik/herdr",
+      "extensions": [],
+      "skills": [
+        "SKILL.md"
+      ],
+      "prompts": [],
+      "themes": []
+    },
+    "git:github.com/DietrichGebert/ponytail"
   ],
   "defaultProvider": "openai-codex",
   "defaultModel": "gpt-5.5",
@@ -85,5 +96,8 @@
   "transport": "auto",
   "pi-account-router": {
     "showFooter": true
-  }
+  },
+  "toolBackground": "transparent",
+  "diffPalette": "auto",
+  "diffShikiTheme": "gruvbox-dark-medium"
 }

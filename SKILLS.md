@@ -70,6 +70,7 @@ pi --skill /path/to/skill-or-skills-dir
 ## Global
 
 - `pi-subagents` — Delegation workflows for the `subagent(...)` tool, chains, parallel tasks, async runs, and agent management.
+- `pi-lens` — Global code-intelligence skill suite from `npm:pi-lens`: `ast-grep`, `lsp-navigation`, `write-ast-grep-rule`, and `write-tree-sitter-rule`.
 - `librarian` — Evidence-backed open-source library research with GitHub permalinks; provided by `git:github.com/markoonakic/pi-web-access@feat/openai-native-web-search`.
 - `pi-processes` — Background process management patterns for dev servers, watchers, test runners, and logs.
 - `pi-intercom` — Coordination patterns for multiple local Pi sessions.
@@ -83,6 +84,8 @@ pi --skill /path/to/skill-or-skills-dir
 - `poster` — Creates single-file React posters/cards/dashboards/PDF-ready visuals; loaded globally from `npm:pi-poster`.
 - `pi-messenger-crew` — Crew/messenger coordination workflow for multi-agent work across Pi sessions; loaded globally from `npm:pi-messenger`.
 - `browser-use` — Browser automation CLI guidance for navigating sites, inspecting page state, interacting with elements, screenshots, extraction, sessions, cloud browsers, and tunnels. Loaded globally from `git:github.com/browser-use/browser-use` with a filtered package entry that enables only `skills/browser-use`, so it remains updateable via `pi update`.
+- `herdr` — Skill for controlling Herdr workspaces, tabs, panes, and agents from inside Herdr; loaded globally from `git:github.com/ogulcancelik/herdr` with only `SKILL.md` enabled.
+- `ponytail` — Minimalist coding/review skill suite for avoiding over-engineering; loaded globally from `git:github.com/DietrichGebert/ponytail`.
 
 ## Global local skills
 
@@ -95,8 +98,6 @@ pi --skill /path/to/skill-or-skills-dir
 ## Project-only
 
 - `/Users/marko/spona` — Spona workspace project config in `/Users/marko/spona/.pi/settings.json`.
-  - `ast-grep` — Semantic code search/replacement guidance from `npm:pi-lens`; project-only with Pi Lens.
-  - `lsp-navigation` — IDE-style definition/reference/type navigation guidance from `npm:pi-lens`; project-only with Pi Lens.
   - `grill-me` — Included in the Spona filter so the global `grill-me` remains available when the project package entry shadows the global Matt skills package.
   - `grill-with-docs` — Spona-local planning/design grilling that reads and updates project domain docs such as `CONTEXT.md` and ADRs.
   - `diagnose` — Disciplined debugging loop: feedback loop, reproduce, hypotheses, instrumentation, fix, regression test.

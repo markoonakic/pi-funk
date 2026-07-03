@@ -53,6 +53,7 @@ Skill-only package entries from `settings.json` are cataloged in `SKILLS.md` ins
 - `git:github.com/markoonakic/pi-funky-ui` — Custom Pi UI layer combining Claude-style tool/message rendering with the Funky UI header/footer/working indicator. Replaces `npm:pi-claude-style-tools` globally; intentionally excludes upstream `spinner.ts` so `pi-working-line` remains the owner of `ctx.ui.setWorkingMessage()`.
 - `npm:pi-caffeinate` — Keeps the machine awake while Pi is running.
 - `git:github.com/nicobailon/pi-subagents` — Global `subagent` package for disposable helper agents, chains, async runs, and compact above-editor run status. Local first-party replacement remains dev-only until explicitly approved.
+- `npm:pi-lens` — Adds local code intelligence helpers, diagnostics, AST-aware search/replace, and Lens skills globally so remote hosts match the Mac workflow.
 - `npm:pi-codex-goal` — Adds Codex-style persistent `/goal` tracking and continuation for long-running objectives, plus `/create-goal` and the `get_goal`, `create_goal`, and `update_goal` tools; goal state is stored in session custom entries and follows resume/fork/compaction behavior.
 - `npm:pi-boomerang` — Runs `/boomerang` autonomous tasks, prompt-template chains, rethrows, and context collapse into handoff summaries to save future tokens.
 - `npm:@howaboua/pi-auto-trees` — Adds `/marker` and `/end` for long single-session workflows the user likes: `/end` uses Pi session-tree branch summarization to roll a completed increment back to the marker, then advances the marker so the session keeps useful context without implementation noise.
@@ -83,7 +84,6 @@ Skill-only package entries from `settings.json` are cataloged in `SKILLS.md` ins
 ## Project-only
 
 - `pi-agent-team` — Dev-only prototype; removed from global Pi setup. Keep any local checkout out of durable config.
-- `pi-lens` *(source TBD)* — Project-local lens/index/review workflow that should stay opt-in.
 - `npm:@steel-experiments/pi-steel` — Pi-native Steel browser automation for navigating, scraping, and interacting with live sites.
 - `npm:pi-annotate` — Browser-based visual annotation workflow that captures elements, comments, screenshots, and style edits for UI fixes.
 - `npm:pi-better-openai` — OpenAI subscription workflow helper; only the `openai_image`/`/openai-image` Codex-auth image generation is useful here, so keep project-local for now and consider extracting that image-only functionality into a local extension later.
