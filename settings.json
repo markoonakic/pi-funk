@@ -96,5 +96,8 @@
   "transport": "auto",
   "pi-account-router": {
     "showFooter": true
-  }
+  },
+  "toolBackground": "transparent",
+  "diffPalette": "auto",
+  "diffShikiTheme": "gruvbox-dark-medium"
 }
