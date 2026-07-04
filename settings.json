@@ -4,7 +4,6 @@
   "quietStartup": true,
   "packages": [
     "git:github.com/markoonakic/pi-funky-ui",
-    "npm:pi-caffeinate",
     "git:github.com/nicobailon/pi-subagents",
     "npm:pi-lens",
     "npm:pi-codex-goal",

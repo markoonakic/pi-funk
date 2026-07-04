@@ -51,7 +51,6 @@ Durable global package entries use npm/git sources. Local checkouts under `/User
 Skill-only package entries from `settings.json` are cataloged in `SKILLS.md` instead of duplicated here.
 
 - `git:github.com/markoonakic/pi-funky-ui` — Custom Pi UI layer combining Claude-style tool/message rendering with the Funky UI header/footer/working indicator. Replaces `npm:pi-claude-style-tools` globally; intentionally excludes upstream `spinner.ts` so `pi-working-line` remains the owner of `ctx.ui.setWorkingMessage()`.
-- `npm:pi-caffeinate` — Keeps the machine awake while Pi is running.
 - `git:github.com/nicobailon/pi-subagents` — Global `subagent` package for disposable helper agents, chains, async runs, and compact above-editor run status. Local first-party replacement remains dev-only until explicitly approved.
 - `npm:pi-lens` — Adds local code intelligence helpers, diagnostics, AST-aware search/replace, and Lens skills globally so remote hosts match the Mac workflow.
 - `npm:pi-codex-goal` — Adds Codex-style persistent `/goal` tracking and continuation for long-running objectives, plus `/create-goal` and the `get_goal`, `create_goal`, and `update_goal` tools; goal state is stored in session custom entries and follows resume/fork/compaction behavior.
