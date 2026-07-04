@@ -50,7 +50,6 @@
     "git:github.com/markoonakic/pi-root-resume",
     "git:github.com/markoonakic/pi-peon-ping",
     "npm:pi-mcp-adapter",
-    "npm:pi-dynamic-workflows",
     {
       "source": "git:github.com/browser-use/browser-use",
       "extensions": [],
@@ -69,7 +68,9 @@
       "prompts": [],
       "themes": []
     },
-    "git:github.com/DietrichGebert/ponytail"
+    "git:github.com/DietrichGebert/ponytail",
+    "npm:@quintinshaw/pi-dynamic-workflows",
+    "npm:@juicesharp/rpiv-ask-user-question"
   ],
   "defaultProvider": "openai-codex",
   "defaultModel": "gpt-5.5",
@@ -92,12 +93,9 @@
     }
   },
   "hideThinkingBlock": false,
-  "lastChangelogVersion": "0.74.0",
+  "lastChangelogVersion": "0.80.2",
   "transport": "auto",
   "pi-account-router": {
     "showFooter": true
-  },
-  "toolBackground": "transparent",
-  "diffPalette": "auto",
-  "diffShikiTheme": "gruvbox-dark-medium"
+  }
 }

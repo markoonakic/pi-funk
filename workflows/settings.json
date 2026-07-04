@@ -1,0 +1,4 @@
+{
+  "defaultConcurrency": 16,
+  "defaultAgentRetries": 1
+}
