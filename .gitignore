@@ -32,3 +32,5 @@ readonly-research/
 fork-diagnosis/
 interrupt-investigation/
 ui/
+
+/auth.json

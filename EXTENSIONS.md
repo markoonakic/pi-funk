@@ -80,7 +80,6 @@ Skill-only package entries from `settings.json` are cataloged in `SKILLS.md` ins
 - `npm:@juicesharp/rpiv-btw` — Adds `/btw <question>` for one-off side questions to a tool-less side agent using a read-only clone of the current conversation. Answers render in a bottom panel, maintain in-memory `/btw` follow-up history for the current Pi process, and do not pollute the main transcript or persist to disk.
 - `npm:@juicesharp/rpiv-ask-user-question` — Adds the `ask_user_question` tool for structured clarifying questions with typed options, multi-select, previews, notes, and a review/submit dialog; installed globally so agents can ask for concrete decisions instead of guessing. Uses English fallback UI unless optional `@juicesharp/rpiv-i18n` is installed.
 - `npm:pi-mcp-adapter` — Bridges MCP server definitions from `~/.config/mcp/mcp.json` into Pi tools; installed globally so Pi can load configured MCP servers such as Expect.
-- `npm:@quintinshaw/pi-dynamic-workflows` — Replaces the older `npm:pi-dynamic-workflows` prototype with maintained Claude-Code-style dynamic workflows: background `workflow` runs, `/workflows`, model tiers, resume journals, git worktree isolation, token/cost accounting, and built-in research/review workflows. Global workflow defaults are tracked in `workflows/settings.json`; current durable defaults set concurrency to 16 and agent retries to 1 while leaving trigger behavior at package defaults.
 
 ## Project-only
 

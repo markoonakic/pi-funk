@@ -1,6 +1,6 @@
 {
   "theme": "gruvbox",
-  "defaultThinkingLevel": "xhigh",
+  "defaultThinkingLevel": "max",
   "quietStartup": true,
   "packages": [
     "git:github.com/markoonakic/pi-funky-ui",
@@ -68,7 +68,6 @@
       "themes": []
     },
     "git:github.com/DietrichGebert/ponytail",
-    "npm:@quintinshaw/pi-dynamic-workflows",
     "npm:@juicesharp/rpiv-ask-user-question"
   ],
   "defaultProvider": "openai-codex",
