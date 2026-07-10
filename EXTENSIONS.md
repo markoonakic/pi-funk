@@ -51,7 +51,7 @@ Durable global package entries use npm/git sources. Local checkouts under `/User
 Skill-only package entries from `settings.json` are cataloged in `SKILLS.md` instead of duplicated here.
 
 - `git:github.com/markoonakic/pi-funky-ui` — Custom Pi UI layer combining Claude-style tool/message rendering with the Funky UI header/footer/working indicator. Replaces `npm:pi-claude-style-tools` globally; intentionally excludes upstream `spinner.ts` so `pi-working-line` remains the owner of `ctx.ui.setWorkingMessage()`.
-- `git:github.com/nicobailon/pi-subagents` — Global `subagent` package for disposable helper agents, chains, async runs, and compact above-editor run status. Local first-party replacement remains dev-only until explicitly approved.
+- `git:github.com/nicobailon/pi-subagents` — Active global `subagent` package for disposable helper agents, chains, async runs, and compact above-editor run status. Local forks remain dev-only unless explicitly approved.
 - `npm:pi-lens` — Adds local code intelligence helpers, diagnostics, AST-aware search/replace, and Lens skills globally so remote hosts match the Mac workflow.
 - `npm:pi-codex-goal` — Adds Codex-style persistent `/goal` tracking and continuation for long-running objectives, plus `/create-goal` and the `get_goal`, `create_goal`, and `update_goal` tools; goal state is stored in session custom entries and follows resume/fork/compaction behavior.
 - `npm:pi-boomerang` — Runs `/boomerang` autonomous tasks, prompt-template chains, rethrows, and context collapse into handoff summaries to save future tokens.
@@ -64,7 +64,8 @@ Skill-only package entries from `settings.json` are cataloged in `SKILLS.md` ins
 - `git:github.com/nicobailon/visual-explainer` — Agent skill plus prompt templates for self-contained HTML diagrams, visual reviews, plan reviews, recaps, slides, and shareable pages; now enabled globally by request.
 - `npm:pi-poster` — Renders single-file React posters, cards, dashboards, and one-page PDFs as visual assets; now enabled globally by request.
 - `git:github.com/markoonakic/pi-codex-usage` — Adds `/codex-usage` plus `Ctrl+Shift+U` to show native Codex usage windows in a modal.
-- `git:github.com/markoonakic/pi-codex-fast-mode` — Minimal `/fast` extension for OpenAI Codex; injects only `service_tier: "priority"` for configured `openai-codex` models (`gpt-5.4`, `gpt-5.5`) and avoids footer, usage, image, verbosity, or settings UI changes.
+- `git:github.com/markoonakic/pi-codex-fast-mode` — Minimal `/fast` extension for OpenAI Codex; injects only `service_tier: "priority"` for configured `openai-codex` models (`gpt-5.4`, `gpt-5.5`, `gpt-5.6-sol`). Its ignored sidecar is machine-local: off on the Mac and on on `disko`.
+- `extensions/moshi-hooks.ts` — Ignored machine-local Moshi integration hook; its contents are intentionally not part of durable shared config.
 - `git:github.com/markoonakic/pi-account-router` — Routes Codex requests across multiple Pi OAuth accounts with transparent failover.
 - `git:github.com/markoonakic/pi-root-resume` — Adds `/rr` and `/root-resume`, a root-only fuzzy session manager that scans session JSONL files directly with bounded memory so large project session directories can be resumed without loading every fork, clone, or subagent session.
 - `git:github.com/markoonakic/pi-peon-ping` — Adds `/peon` plus sound and desktop notifications for Pi lifecycle events using Peon Ping/OpenPeon sound packs. Config and downloaded pack state live under `~/.config/peon-ping`; subagent sounds are suppressed by default to avoid duplicate completion alerts.

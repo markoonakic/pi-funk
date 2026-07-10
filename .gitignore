@@ -8,6 +8,8 @@
 local-extensions/
 /extensions/herdr-agent-state.ts
 /extensions/herdr-pi-session-name-sync.ts
+/extensions/pi-codex-fast-mode.json
+/extensions/moshi-hooks.ts
 *.bak.*
 
 # Root scratch artifacts

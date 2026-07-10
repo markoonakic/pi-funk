@@ -54,6 +54,8 @@ Durable custom packages in `settings.json` should use npm/git sources. Local che
 
 Use `local-extensions/` only for untracked private experiments or machine-specific hooks that should not be committed.
 
+Host-local files in the live `extensions/` directory are ignored: `pi-codex-fast-mode.json` persists `/fast` state (off on the Mac, on on `disko`, with GPT-5.4, GPT-5.5, and GPT-5.6 Sol enabled), while `moshi-hooks.ts` remains machine-local for Moshi integration.
+
 Avoid `archived-extensions/`; Git history is the archive.
 
 ## Settings migration plan
