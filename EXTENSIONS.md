@@ -115,7 +115,6 @@ Other known project-local candidates, not globally loaded:
 - `npm:pi-better-openai` — OpenAI subscription workflow helper; its Codex-auth image generation is the useful subset here.
 - `npm:pi-hosts` — SSH host inventory and remote execution; reconsider after its old pinned Pi dependency is updated.
 - `npm:@marcfargas/pi-test-harness` — Extension test library; use as a repo-local dev dependency, not a runtime package.
-- `pi-agent-team` — Migration into `pi-zza` is pending before Herdr/Nix; preserve it as an inactive private package and do not expose it globally without separate approval.
 
 ## One-run only
 
@@ -131,6 +130,7 @@ Computer Use remains installed but inactive. Autoresearch and Excalidraw are fet
 
 ## Inactive and unexposed
 
+- `@pi-zza/agent-team` — Private, inactive, and independently testable; absent from the root `pi.extensions` and live/global config. `pi-zza` PR #13 (`c48f94f21a5376a73d26f6bddf43fbfcdafc5b4f`) preserves the reviewed migration from private source revision `a757fa7ccd1c9a40691e2223ae7f91a7ae1e7cef`. This makes no license or publication claim. The private source repository must be retained and must not be archived or deleted without separate approval.
 - `@pi-zza/subagents` — Custom Subagents source migrated from archived `markoonakic/pi-subagents@140e4bc8e4dacdc3250eb8e774a414120efc1ce4`. It remains absent from the root manifest and active settings until separately qualified and approved. Nico Bailon's package remains the active global Subagents provider.
 
 ## Removed from active configuration
