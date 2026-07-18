@@ -120,7 +120,7 @@ Child repositories do not inherit Spona or Homelab umbrella settings. `/home/mar
 - `poster` — Removed from global package loading; load explicitly for one-page visual assets.
 - `pi-messenger-crew` — Removed with the Messenger extension; load explicitly only if Crew orchestration is intentionally restored.
 
-The custom `markoonakic/pi-subagents` fork is preserved but inactive and contributes no globally discovered skill. Nico Bailon's Subagents package remains authoritative.
+Custom Subagents is preserved in `pi-zza` as the unexposed `@pi-zza/subagents` package and contributes no globally discovered skill. Nico Bailon's Subagents package remains authoritative.
 
 ## Deferred
 

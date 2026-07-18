@@ -13,10 +13,10 @@
         "packages/funky-ui/extensions/funky-ui.ts",
         "packages/working-line/src/index.ts",
         "packages/codex-fast-mode/index.ts",
-        "packages/peon-ping/src/index.ts",
-        "packages/auto-trees/index.ts"
+        "packages/peon-ping/src/index.ts"
       ]
     },
+    "npm:@howaboua/pi-auto-trees",
     "git:github.com/nicobailon/pi-subagents",
     "git:github.com/markoonakic/pi-web-access@feat/openai-native-web-search",
     "npm:@ff-labs/pi-fff",

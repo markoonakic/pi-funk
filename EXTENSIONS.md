@@ -46,13 +46,13 @@ pi -e npm:example-package
 
 ## Consolidated `pi-zza` catalog
 
-The eight migrated extensions are loaded from the unpinned private source `git:git@github.com:lmilojevicc/pi-zza`. The source follows its default `main` branch, so ordinary updates work with:
+Seven custom extensions are loaded from the unpinned private source `git:git@github.com:lmilojevicc/pi-zza`. The source follows its default `main` branch, so ordinary updates work with:
 
 ```bash
 pi update --extensions
 ```
 
-Global settings use an exact nine-file allowlist. Funky UI intentionally owns two entrypoints; the other seven extensions own one each:
+Global settings use an exact eight-file allowlist. Funky UI intentionally owns two entrypoints; the other six active extensions own one each:
 
 - `packages/account-router/src/index.ts` — Account Router
 - `packages/root-resume/extensions/root-resume.ts` — Root Resume
@@ -62,9 +62,8 @@ Global settings use an exact nine-file allowlist. Funky UI intentionally owns tw
 - `packages/working-line/src/index.ts` — Working Line
 - `packages/codex-fast-mode/index.ts` — Codex Fast Mode
 - `packages/peon-ping/src/index.ts` — Peon Ping
-- `packages/auto-trees/index.ts` — Auto Trees
 
-The filter deliberately excludes Funky UI's dormant spinner entrypoint. Working Line remains the sole owner of `ctx.ui.setWorkingMessage()`. Custom Subagents is not exposed by `pi-zza`.
+The filter deliberately excludes Funky UI's dormant spinner entrypoint. Working Line remains the sole owner of `ctx.ui.setWorkingMessage()`. Custom Subagents is preserved in `pi-zza` as `@pi-zza/subagents` but remains absent from the root manifest and active allowlist.
 
 Migration provenance, frozen source revisions, behavior reductions, licenses, and attributions are recorded in `pi-zza/docs/migration-provenance.md`.
 
@@ -81,10 +80,10 @@ Durable global entries use npm/git sources. Local checkouts under `/home/marko/P
 - **Working Line** — Shows a compact working line and final turn summary in the TUI.
 - **Codex Fast Mode** — Adds `/fast` for configured OpenAI Codex models by setting `service_tier: "priority"`. Machine-local enablement remains in the ignored sidecar.
 - **Peon Ping** — Adds `/peon`, sound packs, and desktop lifecycle notifications. Config/downloaded packs remain under `~/.config/peon-ping`; subagent sounds are suppressed by default.
-- **Auto Trees** — Adds `/marker` and `/end` for incremental long-running session workflows.
 
 ### Other global extensions
 
+- `npm:@howaboua/pi-auto-trees` — External upstream package adding `/marker` and `/end` for incremental long-running session workflows; no custom delta is maintained in `pi-zza`.
 - `git:github.com/nicobailon/pi-subagents` — Active global Subagents provider for helper agents, chains, async runs, and status UI.
 - `git:github.com/markoonakic/pi-web-access@feat/openai-native-web-search` — Web search, content fetching, code search, and browser-backed fallback research tools.
 - `npm:@ff-labs/pi-fff` — FFF file indexing and fast file discovery.
@@ -130,13 +129,13 @@ pi -e npm:@injaneity/pi-computer-use
 
 Computer Use remains installed but inactive. Autoresearch and Excalidraw are fetched on demand.
 
-## Inactive and preserved
+## Inactive and unexposed
 
-- `git:github.com/markoonakic/pi-subagents@140e4bc8e4dacdc3250eb8e774a414120efc1ce4` — Custom fork preserved at this revision but deliberately not configured or exposed through `pi-zza`. Nico Bailon's package remains the active global Subagents provider.
+- `@pi-zza/subagents` — Custom Subagents source migrated from `markoonakic/pi-subagents@140e4bc8e4dacdc3250eb8e774a414120efc1ce4`. It remains absent from the root manifest and active settings until separately qualified and approved. Nico Bailon's package remains the active global Subagents provider.
 
 ## Removed from active configuration
 
-- Standalone migrated owners: `markoonakic/pi-account-router`, `pi-root-resume`, `pi-codex-usage`, `pi-funky-ui`, `pi-working-line`, `pi-codex-fast-mode`, and `pi-peon-ping`, plus `npm:@howaboua/pi-auto-trees`. Their active implementations now come only from `pi-zza`.
+- Standalone migrated owners: `markoonakic/pi-account-router`, `pi-root-resume`, `pi-codex-usage`, `pi-funky-ui`, `pi-working-line`, `pi-codex-fast-mode`, and `pi-peon-ping`. Their active implementations now come only from `pi-zza`.
 - `npm:pi-boomerang`
 - `npm:pi-codex-goal` — Removed from the Pi package store as obsolete inactive residue.
 - `npm:pi-messenger`
