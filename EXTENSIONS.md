@@ -133,12 +133,12 @@ Computer Use remains installed but inactive. Autoresearch and Excalidraw are fet
 ## Inactive and preserved
 
 - `git:github.com/markoonakic/pi-subagents@140e4bc8e4dacdc3250eb8e774a414120efc1ce4` — Custom fork preserved at this revision but deliberately not configured or exposed through `pi-zza`. Nico Bailon's package remains the active global Subagents provider.
-- `npm:pi-codex-goal` — Not configured; obsolete installed residue pending removal.
 
 ## Removed from active configuration
 
 - Standalone migrated owners: `markoonakic/pi-account-router`, `pi-root-resume`, `pi-codex-usage`, `pi-funky-ui`, `pi-working-line`, `pi-codex-fast-mode`, and `pi-peon-ping`, plus `npm:@howaboua/pi-auto-trees`. Their active implementations now come only from `pi-zza`.
 - `npm:pi-boomerang`
+- `npm:pi-codex-goal` — Removed from the Pi package store as obsolete inactive residue.
 - `npm:pi-messenger`
 - `npm:pi-design-deck`
 - `git:github.com/nicobailon/visual-explainer`
