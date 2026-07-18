@@ -131,11 +131,12 @@ Computer Use remains installed but inactive. Autoresearch and Excalidraw are fet
 
 ## Inactive and unexposed
 
-- `@pi-zza/subagents` — Custom Subagents source migrated from `markoonakic/pi-subagents@140e4bc8e4dacdc3250eb8e774a414120efc1ce4`. It remains absent from the root manifest and active settings until separately qualified and approved. Nico Bailon's package remains the active global Subagents provider.
+- `@pi-zza/subagents` — Custom Subagents source migrated from archived `markoonakic/pi-subagents@140e4bc8e4dacdc3250eb8e774a414120efc1ce4`. It remains absent from the root manifest and active settings until separately qualified and approved. Nico Bailon's package remains the active global Subagents provider.
 
 ## Removed from active configuration
 
-- Standalone migrated owners: `markoonakic/pi-account-router`, `pi-root-resume`, `pi-codex-usage`, `pi-funky-ui`, `pi-working-line`, `pi-codex-fast-mode`, and `pi-peon-ping`. Their active implementations now come only from `pi-zza`.
+- Standalone migrated owners: `markoonakic/pi-account-router`, `pi-root-resume`, `pi-codex-usage`, `pi-funky-ui`, `pi-codex-fast-mode`, and `pi-peon-ping` are archived; their active implementations now come only from `pi-zza`. The corresponding local checkouts were removed.
+- `markoonakic/pi-working-line` remains public for downstream compatibility, but its local standalone checkout was removed and active development moved to `pi-zza`.
 - `npm:pi-boomerang`
 - `npm:pi-codex-goal` — Removed from the Pi package store as obsolete inactive residue.
 - `npm:pi-messenger`
