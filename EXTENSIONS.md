@@ -115,7 +115,7 @@ Other known project-local candidates, not globally loaded:
 - `npm:pi-better-openai` — OpenAI subscription workflow helper; its Codex-auth image generation is the useful subset here.
 - `npm:pi-hosts` — SSH host inventory and remote execution; reconsider after its old pinned Pi dependency is updated.
 - `npm:@marcfargas/pi-test-harness` — Extension test library; use as a repo-local dev dependency, not a runtime package.
-- `pi-agent-team` — Inactive development prototype; keep any checkout out of durable global config.
+- `pi-agent-team` — Migration into `pi-zza` is pending before Herdr/Nix; preserve it as an inactive private package and do not expose it globally without separate approval.
 
 ## One-run only
 
