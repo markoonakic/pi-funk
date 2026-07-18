@@ -3,27 +3,27 @@
   "defaultThinkingLevel": "max",
   "quietStartup": true,
   "packages": [
-    "git:github.com/markoonakic/pi-funky-ui",
+    {
+      "source": "git:git@github.com:lmilojevicc/pi-zza",
+      "extensions": [
+        "packages/account-router/src/index.ts",
+        "packages/root-resume/extensions/root-resume.ts",
+        "packages/codex-usage/extensions/codex-usage.ts",
+        "packages/funky-ui/extensions/index.ts",
+        "packages/funky-ui/extensions/funky-ui.ts",
+        "packages/working-line/src/index.ts",
+        "packages/codex-fast-mode/index.ts",
+        "packages/peon-ping/src/index.ts",
+        "packages/auto-trees/index.ts"
+      ]
+    },
     "git:github.com/nicobailon/pi-subagents",
-    "npm:pi-lens",
-    "npm:pi-boomerang",
-    "npm:@howaboua/pi-auto-trees",
     "git:github.com/markoonakic/pi-web-access@feat/openai-native-web-search",
     "npm:@ff-labs/pi-fff",
-    "git:github.com/davebcn87/pi-autoresearch",
-    "git:github.com/kostyay/pi-k-excalidraw",
-    "npm:pi-design-deck",
-    "git:github.com/nicobailon/visual-explainer",
-    "npm:pi-poster",
-    "git:github.com/markoonakic/pi-codex-usage",
-    "git:github.com/markoonakic/pi-codex-fast-mode",
     "npm:pi-rewind-hook",
-    "git:github.com/markoonakic/pi-working-line",
     "npm:@aliou/pi-processes",
     "npm:pi-intercom",
-    "npm:pi-messenger",
     "npm:pi-thinking-steps",
-    "git:github.com/omerxx/pi-head",
     "npm:@juicesharp/rpiv-todo",
     "npm:@juicesharp/rpiv-btw",
     {
@@ -48,9 +48,6 @@
       "prompts": [],
       "themes": []
     },
-    "git:github.com/markoonakic/pi-account-router",
-    "git:github.com/markoonakic/pi-root-resume",
-    "git:github.com/markoonakic/pi-peon-ping",
     "npm:pi-mcp-adapter",
     {
       "source": "git:github.com/browser-use/browser-use",
@@ -70,7 +67,6 @@
       "prompts": [],
       "themes": []
     },
-    "git:github.com/DietrichGebert/ponytail",
     "npm:@juicesharp/rpiv-ask-user-question"
   ],
   "defaultProvider": "openai-codex",
