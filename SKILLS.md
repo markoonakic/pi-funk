@@ -74,7 +74,11 @@ pi --skill /path/to/skill-or-skills-dir
 - `librarian` — Evidence-backed open-source library research with GitHub permalinks; provided by `git:github.com/markoonakic/pi-web-access@feat/openai-native-web-search`.
 - `pi-processes` — Background process management patterns for dev servers, watchers, test runners, and logs.
 - `pi-intercom` — Coordination patterns for multiple local Pi sessions.
-- `grill-me` — Generic planning/design grilling interview from `git:github.com/mattpocock/skills`; installed globally because it is not project-specific.
+- `grill-me` — User-invoked planning/design grilling wrapper from `git:github.com/mattpocock/skills`; depends on the globally enabled `grilling` skill.
+- `grilling` — Model-invokable interview engine for stress-testing a plan or design; the only globally enabled Matt productivity skill available for model invocation.
+- `handoff` — User-invoked workflow for compacting the current conversation into a redacted handoff document.
+- `teach` — User-invoked, workspace-based teaching workflow.
+- `writing-great-skills` — User-invoked reference for writing and editing agent skills.
 - `shaping` — Collaborative shaping methodology for iterating on requirements, solution options, fit checks, and slices before implementation; loaded globally from `git:github.com/rjs/shaping-skills` with the `+shaping` filter.
 - `visual-explainer` — Generates self-contained HTML diagrams, visual plans, diff/plan reviews, project recaps, fact checks, slide decks, and shareable pages; now loaded globally from `git:github.com/nicobailon/visual-explainer`.
 - `autoresearch-create` — Creates a structured autonomous research/experiment plan; loaded globally from `git:github.com/davebcn87/pi-autoresearch`.

@@ -6,7 +6,6 @@
     "git:github.com/markoonakic/pi-funky-ui",
     "git:github.com/nicobailon/pi-subagents",
     "npm:pi-lens",
-    "npm:pi-codex-goal",
     "npm:pi-boomerang",
     "npm:@howaboua/pi-auto-trees",
     "git:github.com/markoonakic/pi-web-access@feat/openai-native-web-search",
@@ -31,7 +30,11 @@
       "source": "git:github.com/mattpocock/skills",
       "extensions": [],
       "skills": [
-        "skills/productivity/grill-me"
+        "skills/productivity/grill-me",
+        "skills/productivity/grilling",
+        "skills/productivity/handoff",
+        "skills/productivity/teach",
+        "skills/productivity/writing-great-skills"
       ],
       "prompts": [],
       "themes": []
@@ -96,7 +99,6 @@
   "pi-account-router": {
     "showFooter": true
   },
-  "toolBackground": "transparent",
   "diffPalette": "auto",
   "diffShikiTheme": "gruvbox-dark-medium"
 }
