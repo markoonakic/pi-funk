@@ -130,7 +130,7 @@ Computer Use remains installed but inactive. Autoresearch and Excalidraw are fet
 
 ## Inactive and unexposed
 
-- `@pi-zza/agent-team` — Private, inactive, and independently testable; absent from the root `pi.extensions` and live/global config. `pi-zza` PR #13 (`c48f94f21a5376a73d26f6bddf43fbfcdafc5b4f`) preserves the reviewed migration from private source revision `a757fa7ccd1c9a40691e2223ae7f91a7ae1e7cef`. This makes no license or publication claim. The private source repository must be retained and must not be archived or deleted without separate approval.
+- `@pi-zza/agent-team` — Private, inactive, and independently testable; absent from the root `pi.extensions` and live/global config. `pi-zza` PR #13 (`c48f94f21a5376a73d26f6bddf43fbfcdafc5b4f`) preserves the reviewed migration from private source revision `a757fa7ccd1c9a40691e2223ae7f91a7ae1e7cef`. This makes no license or publication claim. `https://github.com/markoonakic/pi-agent-team` remains private and is archived/read-only at that exact default `main`; it was not deleted, transferred, made public, or rewritten. Its local source clone remains preserved and clean. Deletion or unarchival would require a separate future decision.
 - `@pi-zza/subagents` — Custom Subagents source migrated from archived `markoonakic/pi-subagents@140e4bc8e4dacdc3250eb8e774a414120efc1ce4`. It remains absent from the root manifest and active settings until separately qualified and approved. Nico Bailon's package remains the active global Subagents provider.
 
 ## Removed from active configuration
