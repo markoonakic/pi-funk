@@ -46,15 +46,16 @@ pi -e npm:example-package
 
 ## Consolidated `pi-zza` catalog
 
-Seven custom extensions are loaded from the unpinned private source `git:git@github.com:lmilojevicc/pi-zza`. The source follows its default `main` branch, so ordinary updates work with:
+Eight custom extensions are loaded from the unpinned private source `git:git@github.com:lmilojevicc/pi-zza`. The source follows its default `main` branch, so ordinary updates work with:
 
 ```bash
 pi update --extensions
 ```
 
-Global settings use an exact eight-file allowlist. Funky UI intentionally owns two entrypoints; the other six active extensions own one each:
+Global settings use an exact nine-file allowlist. Funky UI intentionally owns two entrypoints; the other seven active extensions own one each:
 
 - `packages/account-router/src/index.ts` — Account Router
+- `packages/herdr-session-name-sync/src/index.ts` — Herdr Session Name Sync
 - `packages/root-resume/extensions/root-resume.ts` — Root Resume
 - `packages/codex-usage/extensions/codex-usage.ts` — Codex Usage
 - `packages/funky-ui/extensions/index.ts` — Funky UI tool/message rendering
@@ -74,6 +75,7 @@ Durable global entries use npm/git sources. Local checkouts under `/home/marko/P
 ### `pi-zza` extensions
 
 - **Account Router** — Routes Codex requests across authenticated Pi OAuth accounts with transparent failover. Settings remain under `pi-account-router`; credentials and runtime state remain outside Git.
+- **Herdr Session Name Sync** — Mirrors Pi `/name` values into Herdr presentation metadata for the Agents sidebar and pane-border agent label; Herdr's official Pi integration remains lifecycle/session authority.
 - **Root Resume** — Adds `/rr` and `/root-resume`, a root-only fuzzy session manager. Deletion is root-only; cascade deletion was intentionally removed.
 - **Codex Usage** — Adds `/codex-usage` and `Ctrl+Shift+U` for native Codex usage windows. Reset-credit details are read-only; consume/redemption behavior was intentionally removed.
 - **Funky UI** — Combines Claude-style tool/message rendering with Funky UI header/footer chrome. Only its two active entrypoints are loaded.
