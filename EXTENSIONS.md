@@ -46,14 +46,15 @@ pi -e npm:example-package
 
 ## Consolidated `pi-zza` catalog
 
-Eight custom extensions are loaded from the unpinned private source `git:git@github.com:lmilojevicc/pi-zza`. The source follows its default `main` branch, so ordinary updates work with:
+Nine custom extensions are loaded from the unpinned private source `git:git@github.com:lmilojevicc/pi-zza`. The source follows its default `main` branch, so ordinary updates work with:
 
 ```bash
 pi update --extensions
 ```
 
-Global settings use an exact nine-file allowlist. Funky UI intentionally owns two entrypoints; the other seven active extensions own one each:
+Global settings use an exact ten-file allowlist. Funky UI intentionally owns two entrypoints; the other eight active extensions own one each:
 
+- `packages/auto-session-name/src/index.ts` — Auto Session Name
 - `packages/account-router/src/index.ts` — Account Router
 - `packages/herdr-session-name-sync/src/index.ts` — Herdr Session Name Sync
 - `packages/root-resume/extensions/root-resume.ts` — Root Resume
@@ -74,6 +75,7 @@ Durable global entries use npm/git sources. Local checkouts under `/home/marko/P
 
 ### `pi-zza` extensions
 
+- **Auto Session Name** — Names an unnamed interactive root session once after its first request settles, using a bounded detached model request with a deterministic fallback. Manual names and clears remain authoritative; subagent sessions are excluded.
 - **Account Router** — Routes Codex requests across authenticated Pi OAuth accounts with transparent failover. Settings remain under `pi-account-router`; credentials and runtime state remain outside Git.
 - **Herdr Session Name Sync** — Mirrors Pi `/name` values into Herdr presentation metadata for the Agents sidebar and pane-border agent label; Herdr's official Pi integration remains lifecycle/session authority.
 - **Root Resume** — Adds `/rr` and `/root-resume`, a root-only fuzzy session manager. Deletion is root-only; cascade deletion was intentionally removed.

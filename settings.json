@@ -6,6 +6,7 @@
     {
       "source": "git:git@github.com:lmilojevicc/pi-zza",
       "extensions": [
+        "packages/auto-session-name/src/index.ts",
         "packages/account-router/src/index.ts",
         "packages/herdr-session-name-sync/src/index.ts",
         "packages/root-resume/extensions/root-resume.ts",
