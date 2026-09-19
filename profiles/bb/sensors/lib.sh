@@ -66,15 +66,37 @@ FINDINGS_FILE=""
 _findings_init() { FINDINGS_FILE="$(mktemp)"; }
 
 # Record a finding. Only meaningful when the sensor will report.
-# args: id component kind current available risk [action]
+# args: id component kind current available risk action [title] [summary] [detail]
+#
+# `title`, `summary`, and `detail` are the HUMAN fields the dashboard shows.
+# `current`/`available` are technical and stay hidden behind a disclosure, so a
+# raw 40-character revision never clutters the main view.
 add_finding() {
   [ -n "$FINDINGS_FILE" ] || _findings_init
   jq -nc \
     --arg id "${1:-}" --arg component "${2:-}" --arg kind "${3:-}" \
     --arg current "${4:-}" --arg available "${5:-}" \
     --arg risk "${6:-}" --arg action "${7:-}" \
-    '{id:$id,component:$component,kind:$kind,current:$current,available:$available,risk:$risk,action:$action}' \
+    --arg title "${8:-}" --arg summary "${9:-}" --arg detail "${10:-}" \
+    '{id:$id,component:$component,kind:$kind,current:$current,available:$available,
+      risk:$risk,action:$action,
+      title:(if $title=="" then $component else $title end),
+      summary:(if $summary=="" then $action else $summary end),
+      detail:$detail}' \
     >>"$FINDINGS_FILE"
+}
+
+# True when a value looks like a raw hash/revision rather than a version.
+is_hashy() {
+  case "$1" in
+    *[0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f]*) [ "${#1}" -ge 32 ] ;; 
+    *) return 1 ;;
+  esac
+}
+
+# A short, human way to refer to a revision: "a1b2c3d" or "updated".
+short_ref() {
+  if is_hashy "$1"; then printf '%s' "${1:0:7}"; else printf '%s' "$1"; fi
 }
 
 # If any findings were recorded, emit the report and exit 0. Otherwise exit 0

@@ -48,14 +48,18 @@ check_input() {
         if [ -n "$locked" ] && [ "$locked" != "$remote" ]; then
           add_finding "$key" "$label" "flake-input" \
             "$locked" "$remote" "safe" \
-            "Locked rev differs from upstream; build and diff before applying"
+            "Builds the whole system; no kernel change expected" \
+            "$label is behind" \
+            "A newer upstream revision is available. Build and compare before applying."
         fi
       fi
       ;;
     changed)
       add_finding "$key" "$label" "flake-input" \
         "${prev:-unknown}" "$remote" "safe" \
-        "Flake input moved; build disko+sarmica+pi and diff the closure before applying"
+        "Builds the whole system; no kernel change expected" \
+        "$label moved" \
+        "Upstream advanced to a newer revision. Build and compare the closure before applying."
       ;;
   esac
 }

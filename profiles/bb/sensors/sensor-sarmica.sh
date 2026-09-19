@@ -52,14 +52,18 @@ check_product() {
       if [ -n "$pinned" ] && [ "${pinned#v}" != "$latest" ]; then
         add_finding "$key" "$product" "release" \
           "${pinned#v}" "$latest" "review" \
-          "Sarmica production: resolve tag to immutable linux/amd64 digest, verify signature, human-approved only"
+          "Production service - you apply this one, in a maintenance window" \
+          "$product ${pinned#v} → $latest" \
+          "A newer release is available for a service running on Sarmica. The image tag is matched to an exact digest and checked before any change. Sarmica changes are never automatic."
       fi
       ;;
     changed)
       if [ -n "$pinned" ] && [ "${pinned#v}" != "$latest" ]; then
         add_finding "$key" "$product" "release" \
           "${pinned#v}" "$latest" "review" \
-          "Sarmica production: resolve tag to immutable linux/amd64 digest, verify signature, human-approved only"
+          "Production service - you apply this one, in a maintenance window" \
+          "$product ${pinned#v} → $latest" \
+          "A newer release is available for a service running on Sarmica. The image tag is matched to an exact digest and checked before any change. Sarmica changes are never automatic."
       else
         log "$key upstream release list changed (latest=$latest, pinned=${pinned:-?})"
       fi
@@ -94,14 +98,18 @@ if [ -n "$fj_latest" ]; then
       if [ -n "$fj_pinned" ] && [ "$fj_pinned" != "$fj_latest" ]; then
         add_finding "sarmica_forgejo" "Forgejo" "release" \
           "$fj_pinned" "$fj_latest" "review" \
-          "Sarmica production: match exact registry indexes, human-approved only"
+          "Production service - you apply this one, in a maintenance window" \
+          "Forgejo $fj_pinned → $fj_latest" \
+          "A newer Forgejo release is available. The version is matched to an exact registry index before anything changes. Sarmica changes are never automatic."
       fi
       ;;
     changed)
       if [ -n "$fj_pinned" ] && [ "$fj_pinned" != "$fj_latest" ]; then
         add_finding "sarmica_forgejo" "Forgejo" "release" \
           "$fj_pinned" "$fj_latest" "review" \
-          "Sarmica production: match exact registry indexes, human-approved only"
+          "Production service - you apply this one, in a maintenance window" \
+          "Forgejo $fj_pinned → $fj_latest" \
+          "A newer Forgejo release is available. The version is matched to an exact registry index before anything changes. Sarmica changes are never automatic."
       fi
       ;;
   esac

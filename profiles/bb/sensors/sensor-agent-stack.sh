@@ -54,7 +54,9 @@ if [ -n "$pi_current" ] && [ -n "$pi_latest" ]; then
         add_finding \
           "pi:${pi_current}->${pi_latest}" "Pi" "release" \
           "$pi_current" "$pi_latest" "safe" \
-          "Nix pin; 4 coupled hashes (version, src, npmDepsHash, pi-ai modelData); check provider-pi RPC"
+          "Updates the Pi runtime; about to be checked automatically" \
+          "Pi $pi_current → $pi_latest" \
+          "A newer stable Pi is available. All four coupled hashes move together, and the BB bridge is re-tested before anything changes."
       fi
       ;;
     changed)
@@ -62,11 +64,15 @@ if [ -n "$pi_current" ] && [ -n "$pi_latest" ]; then
         add_finding \
           "pi:${pi_current}->${pi_latest}" "Pi" "release" \
           "$pi_current" "$pi_latest" "safe" \
-          "Nix pin; 4 coupled hashes (version, src, npmDepsHash, pi-ai modelData); check provider-pi RPC"
+          "Updates the Pi runtime; about to be checked automatically" \
+          "Pi $pi_current → $pi_latest" \
+          "A newer stable Pi is available. All four coupled hashes move together, and the BB bridge is re-tested before anything changes."
       else
         add_finding "pi-upstream-moved" "Pi" "note" \
           "$pi_current" "$pi_latest" "info" \
-          "Upstream tag set changed; local pin unchanged"
+          "No action needed" \
+          "Pi upstream tags changed" \
+          "The set of upstream tags moved but your pinned version is unchanged."
       fi
       ;;
   esac
@@ -88,7 +94,9 @@ if [ -n "$bb_current" ] && [ -n "$bb_latest" ]; then
         add_finding \
           "bb:${bb_current}->${bb_latest}" "BB" "release" \
           "$bb_current" "$bb_latest" "review" \
-          "Custom-patched build: 8 patches, vendored frontend, livePackage pin. Always human-approved."
+          "Your patched build - needs a manual review before upgrading" \
+          "BB $bb_current → $bb_latest" \
+          "BB is custom-patched: 8 patches, a vendored frontend, and a pinned baseline. The patches must be rebased by hand and the result reviewed. Nothing happens automatically."
       fi
       ;;
     changed)
@@ -96,7 +104,9 @@ if [ -n "$bb_current" ] && [ -n "$bb_latest" ]; then
         add_finding \
           "bb:${bb_current}->${bb_latest}" "BB" "release" \
           "$bb_current" "$bb_latest" "review" \
-          "Custom-patched build: 8 patches, vendored frontend, livePackage pin. Always human-approved."
+          "Your patched build - needs a manual review before upgrading" \
+          "BB $bb_current → $bb_latest" \
+          "BB is custom-patched: 8 patches, a vendored frontend, and a pinned baseline. The patches must be rebased by hand and the result reviewed. Nothing happens automatically."
       fi
       ;;
   esac
@@ -116,7 +126,9 @@ if [ -n "$herdr_latest_tag" ]; then
       add_finding \
         "herdr:${herdr_rev:0:8}->${herdr_latest_tag}" "Herdr" "release" \
         "${herdr_rev:-unknown}" "$herdr_latest_tag" "review" \
-        "Pinned in 3 places: flake rev, Pi skill git pin, vendor hook. Move together; check protocol."
+        "Pinned in three places that must move together" \
+        "Herdr $herdr_latest_tag is available" \
+        "Herdr is pinned in the flake, in a Pi skill, and in a vendor hook. All three move together, and the terminal protocol is checked for changes."
       ;;
   esac
 fi
