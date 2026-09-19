@@ -9,16 +9,18 @@
 # Prints nothing when the sensor finds nothing, so the run is recorded as a
 # silent skipped tick by BB.
 #
-# Usage: dispatch.sh <sensor-name>
+# Usage: dispatch.sh <sensor-name>   or   SENSOR=<name> dispatch.sh
 
 set -uo pipefail
-SENSOR="${1:-}"
+# BB script automations pass configuration as environment variables (--env-json),
+# not arguments, so accept both.
+SENSOR="${1:-${SENSOR:-}}"
 if [ -z "$SENSOR" ]; then
-  echo "usage: dispatch.sh <sensor-name>" >&2
+  echo "usage: dispatch.sh <sensor-name>  (or set SENSOR)" >&2
   exit 2
 fi
 
-SENSORS_DIR="$(cd "$(dirname "$0")" && pwd)"
+SENSORS_DIR="${PI_MAINT_SENSORS_DIR:-$HOME/.config/pi/profiles/bb/sensors}"
 ROOT="${PI_MAINT_ROOT:-$HOME/.local/state/pi-maintenance}"
 LOG="$ROOT/logs/dispatch.log"
 mkdir -p "$ROOT/logs"
