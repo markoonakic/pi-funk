@@ -46,11 +46,13 @@ check_input() {
         locked="$(jq -r --arg n "$input_name" '.nodes[$n].locked.rev // empty' \
           "$NIXOS_MACHINES/flake.lock" 2>/dev/null)"
         if [ -n "$locked" ] && [ "$locked" != "$remote" ]; then
+          # The BB build pins its own toolchain (nixpkgs-bb), so a system
+          # nixpkgs bump no longer perturbs its native addons.
           add_finding "$key" "$label" "flake-input" \
             "$locked" "$remote" "safe" \
             "Builds the whole system; no kernel change expected" \
             "$label is behind" \
-            "A newer upstream revision is available. Build and compare before applying."
+            "A newer upstream revision is available. Build and compare before applying. BB uses its own pinned toolchain, so it is unaffected."
         fi
       fi
       ;;
@@ -59,7 +61,7 @@ check_input() {
         "${prev:-unknown}" "$remote" "safe" \
         "Builds the whole system; no kernel change expected" \
         "$label moved" \
-        "Upstream advanced to a newer revision. Build and compare the closure before applying."
+        "Upstream advanced to a newer revision. Build and compare the closure before applying. BB uses its own pinned toolchain, so it is unaffected."
       ;;
   esac
 }
