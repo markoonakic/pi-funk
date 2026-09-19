@@ -1,0 +1,13 @@
+{
+  "defaultProjectTrust": "never",
+  "enableInstallTelemetry": false,
+  "enableAnalytics": false,
+  "defaultProvider": "openai-codex",
+  "defaultModel": "gpt-6-astra",
+  "defaultThinkingLevel": "high",
+  "packages": [],
+  "compaction": {
+    "enabled": true,
+    "reserveTokens": 100000
+  }
+}
