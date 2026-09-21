@@ -7,7 +7,6 @@
       "source": "git:git@github.com:lmilojevicc/pi-zza",
       "extensions": [
         "packages/auto-session-name/src/index.ts",
-        "packages/account-router/src/index.ts",
         "packages/codex-native-compaction/extensions/codex-native-compaction.ts",
         "packages/herdr-session-name-sync/src/index.ts",
         "packages/root-resume/extensions/root-resume.ts",
@@ -97,11 +96,8 @@
     }
   },
   "hideThinkingBlock": false,
-  "lastChangelogVersion": "0.85.1",
+  "lastChangelogVersion": "0.86.0",
   "transport": "auto",
-  "pi-account-router": {
-    "showFooter": true
-  },
   "diffPalette": "auto",
   "diffShikiTheme": "gruvbox-dark-medium"
 }
