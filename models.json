@@ -9,51 +9,16 @@
       }
     },
     "openai-codex": {
-      "modelOverrides": {
-        "gpt-5.4": {
-          "contextWindow": 1050000,
-          "maxTokens": 128000
-        },
-        "gpt-5.6-sol": {
-          "contextWindow": 1000000
-        },
-        "gpt-6-astra": {
-          "contextWindow": 1000000
-        }
-      }
-    },
-    "b-ai": {
-      "name": "B.AI",
-      "baseUrl": "https://api.b.ai/v1",
-      "api": "openai-completions",
-      "apiKey": "$BAI_API_KEY",
+      "baseUrl": "https://cliproxy.sarma.love/v1",
+      "api": "openai-responses",
+      "apiKey": "!cat \"$HOME/.pi/agent/cliproxy-api-key\"",
       "compat": {
-        "supportsStore": false,
-        "maxTokensField": "max_tokens"
+        "sessionAffinityFormat": "openai"
       },
       "models": [
         {
-          "id": "hy3",
-          "name": "Hy3",
-          "reasoning": true,
-          "thinkingLevelMap": {
-            "off": "no_think",
-            "minimal": "minimal",
-            "low": "low",
-            "medium": "medium",
-            "high": "high",
-            "xhigh": "xhigh",
-            "max": "max"
-          },
-          "input": [
-            "text"
-          ],
-          "contextWindow": 256000,
-          "maxTokens": 128000
-        },
-        {
-          "id": "mimo-v2.5",
-          "name": "MiMo-V2.5",
+          "id": "gpt-6-astra",
+          "name": "GPT 6 Astra",
           "reasoning": true,
           "input": [
             "text",
@@ -61,48 +26,51 @@
           ],
           "contextWindow": 1000000,
           "maxTokens": 128000,
-          "compat": {
-            "thinkingFormat": "deepseek",
-            "supportsReasoningEffort": false
-          }
-        },
-        {
-          "id": "glm-5.3-flash",
-          "name": "GLM-5.3-Flash",
-          "reasoning": true,
           "thinkingLevelMap": {
             "off": null,
             "minimal": "low",
             "low": "low",
-            "medium": "high",
+            "medium": "medium",
             "high": "high",
-            "xhigh": "max",
-            "max": "max"
-          },
-          "input": [
-            "text",
-            "image"
-          ],
-          "contextWindow": 1000000,
-          "maxTokens": 131072,
-          "compat": {
-            "supportsDeveloperRole": false
+            "xhigh": "xhigh"
           }
         },
         {
-          "id": "qwen3.8-flash",
-          "name": "Qwen3.8-Flash",
+          "id": "gpt-5.6-sol",
+          "name": "GPT 5.6 Sol",
           "reasoning": true,
           "input": [
             "text",
             "image"
           ],
           "contextWindow": 1000000,
-          "maxTokens": 131000,
-          "compat": {
-            "thinkingFormat": "qwen",
-            "supportsReasoningEffort": false,
-            "supportsDeveloperRole": false
+          "maxTokens": 128000,
+          "thinkingLevelMap": {
+            "off": null,
+            "minimal": "low",
+            "low": "low",
+            "medium": "medium",
+            "high": "high",
+            "xhigh": "xhigh"
+          }
+        },
+        {
+          "id": "gpt-5.6-luna",
+          "name": "GPT 5.6 Luna",
+          "reasoning": true,
+          "input": [
+            "text",
+            "image"
+          ],
+          "contextWindow": 1000000,
+          "maxTokens": 128000,
+          "thinkingLevelMap": {
+            "off": null,
+            "minimal": "low",
+            "low": "low",
+            "medium": "medium",
+            "high": "high",
+            "xhigh": "xhigh"
           }
         }
       ]
@@ -249,74 +217,6 @@
           ],
           "contextWindow": 1048576,
           "maxTokens": 65536
-        }
-      ]
-    },
-    "codex": {
-      "name": "Codex",
-      "baseUrl": "https://cliproxy.sarma.love/v1",
-      "api": "openai-responses",
-      "apiKey": "!cat \"$HOME/.pi/agent/cliproxy-api-key\"",
-      "compat": {
-        "sessionAffinityFormat": "openai"
-      },
-      "models": [
-        {
-          "id": "gpt-6-astra",
-          "name": "GPT 6 Astra",
-          "reasoning": true,
-          "input": [
-            "text",
-            "image"
-          ],
-          "contextWindow": 272000,
-          "maxTokens": 128000,
-          "thinkingLevelMap": {
-            "off": null,
-            "minimal": "low",
-            "low": "low",
-            "medium": "medium",
-            "high": "high",
-            "xhigh": "xhigh"
-          }
-        },
-        {
-          "id": "gpt-5.6-sol",
-          "name": "GPT 5.6 Sol",
-          "reasoning": true,
-          "input": [
-            "text",
-            "image"
-          ],
-          "contextWindow": 921000,
-          "maxTokens": 128000,
-          "thinkingLevelMap": {
-            "off": null,
-            "minimal": "low",
-            "low": "low",
-            "medium": "medium",
-            "high": "high",
-            "xhigh": "xhigh"
-          }
-        },
-        {
-          "id": "gpt-5.6-luna",
-          "name": "GPT 5.6 Luna",
-          "reasoning": true,
-          "input": [
-            "text",
-            "image"
-          ],
-          "contextWindow": 921000,
-          "maxTokens": 128000,
-          "thinkingLevelMap": {
-            "off": null,
-            "minimal": "low",
-            "low": "low",
-            "medium": "medium",
-            "high": "high",
-            "xhigh": "xhigh"
-          }
         }
       ]
     }
