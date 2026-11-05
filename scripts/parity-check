@@ -1,0 +1,183 @@
+#!/usr/bin/env python3
+"""Read-only parity check between Claude Code and Pi on this machine.
+
+It changes nothing. It prints one table row per check and exits 1 when any
+check shows a gap.
+
+Checks:
+  mcp-global    global MCP server names: Claude (~/.claude.json) and Pi (~/.pi/agent/mcp.json)
+  mcp-render    render-mcp --check for each umbrella
+  context       context files resolve to the repo files
+  tools         agent tools are on PATH
+  skills-native no native skills in Pi, ~/.agents or ~/.claude
+  skills-bb     BB skill list: no provider skills; the ponytail skills exist
+  claude-lsp    Claude LSP plugins are installed
+  bb-extensions bb-extensions checkout is clean on main
+
+Usage:
+  parity-check [--repo DIR] [--umbrella DIR ...] [--tools NAMES] [--bb-project ID]
+               [--bb-extensions DIR]
+"""
+import argparse
+import json
+import os
+import shutil
+import subprocess
+import sys
+from pathlib import Path
+
+HOME = Path.home()
+DEFAULT_TOOLS = (
+    "uv ast-grep shellcheck shfmt nixfmt nil statix deadnix nvd just pandoc ffmpeg "
+    "delta prettier ruff tsc typescript-language-server pyright pyright-langserver"
+).split()
+DEFAULT_UMBRELLAS = ["~/metaoros", "~/spona", "~/homelab"]
+LSP_PLUGINS = ("typescript-lsp", "pyright-lsp")
+BB_SKILLS = ("ponytail", "ponytail-audit", "ponytail-debt", "ponytail-gain", "ponytail-help", "ponytail-review")
+
+rows = []
+
+
+def add(area, name, ok, detail=""):
+    rows.append((area, name, "ok" if ok else "GAP", detail))
+
+
+def run(command, **kwargs):
+    try:
+        return subprocess.run(command, capture_output=True, text=True, timeout=60, **kwargs)
+    except (OSError, subprocess.TimeoutExpired) as error:
+        return subprocess.CompletedProcess(command, 127, "", str(error))
+
+
+def load_json(path):
+    try:
+        return json.loads(Path(path).read_text())
+    except (OSError, ValueError):
+        return None
+
+
+def check_mcp_global():
+    claude = load_json(HOME / ".claude.json")
+    pi = load_json(HOME / ".pi/agent/mcp.json")
+    if claude is None or pi is None:
+        add("mcp-global", "read both files", False, "cannot read ~/.claude.json or ~/.pi/agent/mcp.json")
+        return
+    claude_names = set(claude.get("mcpServers") or {})
+    pi_names = set(pi.get("mcpServers") or {})
+    only_claude, only_pi = sorted(claude_names - pi_names), sorted(pi_names - claude_names)
+    add("mcp-global", "same server names", not only_claude and not only_pi,
+        f"only Claude: {only_claude or '-'}; only Pi: {only_pi or '-'}")
+
+
+def check_mcp_render(umbrellas):
+    render = Path(__file__).with_name("render-mcp")
+    for item in umbrellas:
+        umbrella = Path(item).expanduser()
+        if not (umbrella / "mcp.servers.json").is_file():
+            add("mcp-render", str(item), False, "no mcp.servers.json")
+            continue
+        result = run([sys.executable, str(render), "--check", str(umbrella)])
+        add("mcp-render", str(item), result.returncode == 0, result.stderr.strip().replace("\n", "; "))
+
+
+def check_context(repo, bb_extras):
+    wanted = {
+        HOME / ".pi/agent/AGENTS.md": repo / "agent/AGENTS.md",
+        HOME / ".claude/CLAUDE.md": repo / "agent/AGENTS.md",
+        HOME / ".codex/AGENTS.md": repo / "agent/AGENTS.md",
+        HOME / ".bb/AGENTS.md": bb_extras,
+    }
+    for link, target in wanted.items():
+        name = "~/" + str(link.relative_to(HOME))
+        if not link.exists():
+            add("context", name, False, "missing")
+        elif link.resolve() != target.resolve():
+            add("context", name, False, f"resolves to {link.resolve()}, wanted {target}")
+        else:
+            add("context", name, True)
+
+
+def check_tools(tools):
+    missing = [tool for tool in tools if not shutil.which(tool)]
+    add("tools", f"{len(tools)} agent tools on PATH", not missing, f"missing: {missing}" if missing else "")
+
+
+def entries(path):
+    path = Path(path)
+    if not path.is_dir():
+        return []
+    return sorted(item.name for item in path.iterdir() if not item.name.startswith("."))
+
+
+def check_native_skills():
+    for path in ("~/.pi/agent/skills", "~/.agents/skills", "~/.claude/skills"):
+        found = entries(Path(path).expanduser())
+        add("skills-native", path, not found, f"entries: {found}" if found else "")
+
+
+def check_bb_skills(project):
+    env = dict(os.environ)
+    if project:
+        env["BB_PROJECT_ID"] = project
+    result = run(["bb", "skill", "list", "--json"], env=env)
+    try:
+        skills = json.loads(result.stdout)["skills"]
+    except (ValueError, KeyError, TypeError):
+        add("skills-bb", "bb skill list", False, (result.stderr or result.stdout).strip()[:120])
+        return
+    native = sorted({s["name"] for s in skills if s.get("scope") in ("provider-user", "provider-project")})
+    add("skills-bb", "no harness-native skills", not native, f"native: {native}" if native else "")
+    have = {s["name"] for s in skills if s.get("scope") == "bb-user"}
+    missing = [name for name in BB_SKILLS if name not in have]
+    add("skills-bb", "ponytail skills in ~/.bb/skills", not missing, f"missing: {missing}" if missing else "")
+
+
+def check_claude_lsp():
+    result = run(["claude", "plugin", "list", "--json"])
+    text = result.stdout
+    if result.returncode != 0:
+        text = (HOME / ".claude/plugins/installed_plugins.json").read_text() if (HOME / ".claude/plugins/installed_plugins.json").exists() else ""
+    missing = [name for name in LSP_PLUGINS if name not in text]
+    add("claude-lsp", " + ".join(LSP_PLUGINS), not missing, f"not installed: {missing}" if missing else "")
+
+
+def check_bb_extensions(path):
+    path = Path(path).expanduser()
+    if not (path / ".git").exists():
+        add("bb-extensions", str(path), False, "not a git checkout")
+        return
+    header = run(["git", "-C", str(path), "status", "--porcelain=v1", "--branch"]).stdout.splitlines()
+    branch = header[0] if header else ""
+    dirty = [line for line in header[1:]]
+    ok = branch.startswith("## main") and "ahead" not in branch and "behind" not in branch and not dirty
+    detail = "" if ok else f"{branch}; {len(dirty)} changed file(s)"
+    add("bb-extensions", "clean, on main, in sync", ok, detail)
+
+
+def main(argv=None):
+    parser = argparse.ArgumentParser(description="Read-only Claude and Pi parity check.")
+    parser.add_argument("--repo", default="~/.config/pi", help="Pi config repo (default: %(default)s)")
+    parser.add_argument("--umbrella", action="append", help="umbrella dir with mcp.servers.json (repeatable)")
+    parser.add_argument("--tools", help="space-separated tool names (default: the agent-tools list)")
+    parser.add_argument("--bb-project", help="BB project id; sets BB_PROJECT_ID for bb calls")
+    parser.add_argument("--bb-extensions", default="~/Projects/bb-extensions")
+    args = parser.parse_args(argv)
+    repo = Path(args.repo).expanduser()
+    check_mcp_global()
+    check_mcp_render(args.umbrella or DEFAULT_UMBRELLAS)
+    check_context(repo, repo / "bb/AGENTS.md")
+    check_tools(args.tools.split() if args.tools else DEFAULT_TOOLS)
+    check_native_skills()
+    check_bb_skills(args.bb_project)
+    check_claude_lsp()
+    check_bb_extensions(args.bb_extensions)
+    widths = [max(len(row[i]) for row in rows) for i in range(3)]
+    for area, name, status, detail in rows:
+        print(f"{area:<{widths[0]}}  {name:<{widths[1]}}  {status:<4}  {detail}".rstrip())
+    gaps = sum(row[2] == "GAP" for row in rows)
+    print(f"\n{gaps} gap(s), {len(rows) - gaps} ok")
+    return 1 if gaps else 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

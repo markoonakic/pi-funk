@@ -1,0 +1,134 @@
+#!/usr/bin/env python3
+"""Render project MCP files for Claude Code and Pi from one source file.
+
+Source:  <umbrella>/mcp.servers.json
+Output:  <umbrella>/.mcp.json      (Claude Code project servers)
+         <umbrella>/.pi/mcp.json   (Pi project servers)
+
+Source schema:
+  {"servers": {NAME: {
+      "command": str, "args": [str], "url": str,
+      "type": "http" | "stdio",                      # Claude "type" key
+      "auth": {"toolAuth": ENV_NAME}                 # <umbrella>/.bin/tool-auth ENV_NAME
+            | {"oauth": {...}},                      # Pi only
+      "pi": {...},                                   # keys merged into the Pi entry
+      "claude": {...}                                # keys merged into the Claude entry
+  }}}
+
+Every string value may contain the placeholder {umbrella}. It becomes the
+absolute path of the umbrella directory.
+
+Usage:
+  render-mcp UMBRELLA...          write both files for each umbrella
+  render-mcp --check UMBRELLA...  write nothing; exit 1 when a file differs
+"""
+import argparse
+import json
+import os
+import sys
+from pathlib import Path
+
+SOURCE = "mcp.servers.json"
+
+
+def substitute(value, umbrella):
+    if isinstance(value, str):
+        return value.replace("{umbrella}", umbrella)
+    if isinstance(value, list):
+        return [substitute(item, umbrella) for item in value]
+    if isinstance(value, dict):
+        return {key: substitute(item, umbrella) for key, item in value.items()}
+    return value
+
+
+def render_server(name, server, umbrella):
+    """Return (claude_entry, pi_entry) for one server."""
+    auth = server.get("auth") or {}
+    base = {key: server[key] for key in ("command", "args", "url") if key in server}
+    claude = {}
+    if "type" in server:
+        claude["type"] = server["type"]
+    elif "url" in server:
+        claude["type"] = "http"
+    claude.update(base)
+    pi = dict(base)
+    tool = auth.get("toolAuth")
+    if tool:
+        helper = f"{umbrella}/.bin/tool-auth {tool}"
+        claude["headersHelper"] = f"{helper} --json"
+        pi["headers"] = {"Authorization": f"!{helper}"}
+    if "oauth" in auth:
+        pi["oauth"] = auth["oauth"]
+    claude.update(server.get("claude") or {})
+    pi.update(server.get("pi") or {})
+    return substitute(claude, umbrella), substitute(pi, umbrella)
+
+
+def render(umbrella):
+    source = json.loads((umbrella / SOURCE).read_text())
+    servers = source.get("servers")
+    if not isinstance(servers, dict):
+        raise SystemExit(f"{umbrella / SOURCE}: missing 'servers' object")
+    root = os.path.abspath(umbrella)
+    claude, pi = {}, {}
+    for name, server in servers.items():
+        claude[name], pi[name] = render_server(name, server, root)
+    return {"mcpServers": claude}, {"mcpServers": pi}
+
+
+def dump(data):
+    return json.dumps(data, indent=2) + "\n"
+
+
+def drift(path, wanted):
+    """Compare parsed JSON, not bytes. Return a list of messages."""
+    if not path.exists():
+        return [f"{path}: missing"]
+    try:
+        current = json.loads(path.read_text())
+    except ValueError as error:
+        return [f"{path}: invalid JSON ({error})"]
+    have, want = current.get("mcpServers", {}), wanted["mcpServers"]
+    messages = []
+    for name in sorted(set(have) | set(want)):
+        if name not in want:
+            messages.append(f"{path}: extra server '{name}'")
+        elif name not in have:
+            messages.append(f"{path}: missing server '{name}'")
+        elif have[name] != want[name]:
+            messages.append(f"{path}: server '{name}' differs")
+    extra_keys = sorted(set(current) - {"mcpServers"})
+    if extra_keys:
+        messages.append(f"{path}: unexpected top-level keys {extra_keys}")
+    return messages
+
+
+def main(argv=None):
+    parser = argparse.ArgumentParser(description="Render project MCP files for Claude Code and Pi.")
+    parser.add_argument("--check", action="store_true", help="write nothing; exit 1 on drift")
+    parser.add_argument("umbrellas", nargs="+", help="umbrella directories that hold mcp.servers.json")
+    args = parser.parse_args(argv)
+    problems = []
+    for item in args.umbrellas:
+        umbrella = Path(os.path.expanduser(item))
+        if not (umbrella / SOURCE).is_file():
+            problems.append(f"{umbrella}: no {SOURCE}")
+            continue
+        claude, pi = render(umbrella)
+        targets = ((umbrella / ".mcp.json", claude), (umbrella / ".pi" / "mcp.json", pi))
+        for path, data in targets:
+            if args.check:
+                problems.extend(drift(path, data))
+            else:
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_text(dump(data))
+                print(f"wrote {path}")
+    for message in problems:
+        print(message, file=sys.stderr)
+    if args.check and not problems:
+        print("MCP files match their sources")
+    return 1 if problems else 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
