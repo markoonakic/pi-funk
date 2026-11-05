@@ -22,7 +22,7 @@ Pi reads only <cwd>/.pi/mcp.json. With --worktrees the script also links the
 Pi file into each git worktree below <umbrella>/worktrees (any depth):
   <worktree>/.pi/mcp.json -> relative symlink to <umbrella>/.pi/mcp.json
 The script skips a worktree that has its own .pi/mcp.json, or where git
-tracks that path. It adds /.pi/ to the git info/exclude file of the worktree
+tracks that path. It adds /.pi/mcp.json to the git info/exclude file of the worktree
 (git shares this file between all worktrees of one repo). It never edits a
 tracked .gitignore. Claude Code finds the parent .mcp.json by itself.
 
@@ -157,11 +157,18 @@ def link_worktree(umbrella, worktree, check):
         path = git(worktree, "rev-parse", "--path-format=absolute", "--git-path", "info/exclude")
         exclude = Path(path.stdout.strip())
         text = exclude.read_text() if exclude.exists() else ""
-        if "/.pi/" not in text.splitlines():
+        lines = text.splitlines()
+        if "/.pi/" in lines:
+            # Older runs excluded the whole folder. Narrow it to the link only.
+            lines = [line for line in lines if line != "/.pi/"]
+            text = "\n".join(lines) + ("\n" if lines else "")
+            exclude.write_text(text)
+            notes.append(f"removed the old /.pi/ entry from {exclude}")
+        if "/.pi/mcp.json" not in lines:
             exclude.parent.mkdir(parents=True, exist_ok=True)
             with exclude.open("a") as handle:
-                handle.write(("" if text.endswith("\n") or not text else "\n") + "/.pi/\n")
-            notes.append(f"added /.pi/ to {exclude}")
+                handle.write(("" if text.endswith("\n") or not text else "\n") + "/.pi/mcp.json\n")
+            notes.append(f"added /.pi/mcp.json to {exclude}")
     return [], notes
 
 

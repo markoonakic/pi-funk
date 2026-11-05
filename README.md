@@ -107,7 +107,7 @@ scripts/render-mcp --worktrees ~/metaoros ~/spona          # write the links
 scripts/render-mcp --check --worktrees ~/metaoros ~/spona  # report missing links
 ```
 
-The option `--worktrees` finds each git worktree below `<umbrella>/worktrees` (any depth). It makes the relative symlink `<worktree>/.pi/mcp.json` that points to `<umbrella>/.pi/mcp.json`. The script skips a worktree that has its own `.pi/mcp.json`, or where git tracks that path. It adds `/.pi/` to the `info/exclude` file of the repo (git shares this file between all worktrees of one repo). It never changes a tracked `.gitignore`. Pi trust is inherited from the umbrella directory.
+The option `--worktrees` finds each git worktree below `<umbrella>/worktrees` (any depth). It makes the relative symlink `<worktree>/.pi/mcp.json` that points to `<umbrella>/.pi/mcp.json`. The script skips a worktree that has its own `.pi/mcp.json`, or where git tracks that path. It adds `/.pi/mcp.json` to the `info/exclude` file of the repo (git shares this file between all worktrees of one repo). It never changes a tracked `.gitignore`. Pi trust is inherited from the umbrella directory.
 
 ## Skills
 
