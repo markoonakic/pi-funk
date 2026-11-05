@@ -100,7 +100,14 @@ Keep secrets out of the source. It holds only commands that read secrets at run 
 
 The `macro` server in `metaoros` is for Pi and for Claude Code on purpose. Both outputs have it.
 
-Claude Code finds a parent `.mcp.json` from nested git directories. Pi reads only `<cwd>/.pi/mcp.json`. A worktree rule must link the Pi file into each worktree.
+Claude Code finds a parent `.mcp.json` from nested git directories. Pi reads only `<cwd>/.pi/mcp.json`. So Pi needs a link in each worktree. After `git worktree add`, run:
+
+```bash
+scripts/render-mcp --worktrees ~/metaoros ~/spona          # write the links
+scripts/render-mcp --check --worktrees ~/metaoros ~/spona  # report missing links
+```
+
+The option `--worktrees` finds each git worktree below `<umbrella>/worktrees` (any depth). It makes the relative symlink `<worktree>/.pi/mcp.json` that points to `<umbrella>/.pi/mcp.json`. The script skips a worktree that has its own `.pi/mcp.json`, or where git tracks that path. It adds `/.pi/` to the `info/exclude` file of the repo (git shares this file between all worktrees of one repo). It never changes a tracked `.gitignore`. Pi trust is inherited from the umbrella directory.
 
 ## Skills
 

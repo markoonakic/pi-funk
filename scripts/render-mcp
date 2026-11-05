@@ -18,13 +18,24 @@ Source schema:
 Every string value may contain the placeholder {umbrella}. It becomes the
 absolute path of the umbrella directory.
 
+Pi reads only <cwd>/.pi/mcp.json. With --worktrees the script also links the
+Pi file into each git worktree below <umbrella>/worktrees (any depth):
+  <worktree>/.pi/mcp.json -> relative symlink to <umbrella>/.pi/mcp.json
+The script skips a worktree that has its own .pi/mcp.json, or where git
+tracks that path. It adds /.pi/ to the git info/exclude file of the worktree
+(git shares this file between all worktrees of one repo). It never edits a
+tracked .gitignore. Claude Code finds the parent .mcp.json by itself.
+
 Usage:
   render-mcp UMBRELLA...          write both files for each umbrella
   render-mcp --check UMBRELLA...  write nothing; exit 1 when a file differs
+  render-mcp --worktrees UMBRELLA...          also link the Pi file into worktrees
+  render-mcp --check --worktrees UMBRELLA...  also report missing worktree links
 """
 import argparse
 import json
 import os
+import subprocess
 import sys
 from pathlib import Path
 
@@ -103,9 +114,65 @@ def drift(path, wanted):
     return messages
 
 
+def git(worktree, *args):
+    return subprocess.run(
+        ["git", "-C", str(worktree), *args], capture_output=True, text=True
+    )
+
+
+def find_worktrees(umbrella):
+    """Yield git worktrees (a .git file) below <umbrella>/worktrees at any depth."""
+    top = umbrella / "worktrees"
+    for current, dirs, files in os.walk(top):
+        if ".git" in files:
+            dirs[:] = []  # a worktree: do not look inside it
+            yield Path(current)
+        elif ".git" in dirs:
+            dirs[:] = []  # a full clone: not a linked worktree, skip it
+        else:
+            dirs.sort()
+
+
+def link_worktree(umbrella, worktree, check):
+    """Link <worktree>/.pi/mcp.json to the umbrella file. Return (messages, notes)."""
+    source = umbrella / ".pi" / "mcp.json"
+    link = worktree / ".pi" / "mcp.json"
+    wanted = os.path.relpath(source, link.parent)
+    if link.is_symlink():
+        if os.readlink(link) == wanted:
+            return [], []
+        return [], [f"{link}: skipped, symlink points elsewhere"]
+    if link.exists():
+        return [], [f"{link}: skipped, worktree has its own file"]
+    tracked = git(worktree, "ls-files", "--error-unmatch", ".pi/mcp.json")
+    if tracked.returncode == 0:
+        return [], [f"{link}: skipped, git tracks this path"]
+    if check:
+        return [f"{link}: missing link to the umbrella file"], []
+    link.parent.mkdir(parents=True, exist_ok=True)
+    link.symlink_to(wanted)
+    notes = [f"linked {link}"]
+    ignored = git(worktree, "check-ignore", "-q", ".pi/mcp.json")
+    if ignored.returncode != 0:
+        path = git(worktree, "rev-parse", "--path-format=absolute", "--git-path", "info/exclude")
+        exclude = Path(path.stdout.strip())
+        text = exclude.read_text() if exclude.exists() else ""
+        if "/.pi/" not in text.splitlines():
+            exclude.parent.mkdir(parents=True, exist_ok=True)
+            with exclude.open("a") as handle:
+                handle.write(("" if text.endswith("\n") or not text else "\n") + "/.pi/\n")
+            notes.append(f"added /.pi/ to {exclude}")
+    return [], notes
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description="Render project MCP files for Claude Code and Pi.")
     parser.add_argument("--check", action="store_true", help="write nothing; exit 1 on drift")
+    parser.add_argument(
+        "--worktrees",
+        action="store_true",
+        help="also link <worktree>/.pi/mcp.json to the umbrella Pi file for each git worktree below <umbrella>/worktrees",
+    )
     parser.add_argument("umbrellas", nargs="+", help="umbrella directories that hold mcp.servers.json")
     args = parser.parse_args(argv)
     problems = []
@@ -123,6 +190,12 @@ def main(argv=None):
                 path.parent.mkdir(parents=True, exist_ok=True)
                 path.write_text(dump(data))
                 print(f"wrote {path}")
+        if args.worktrees:
+            for worktree in find_worktrees(umbrella):
+                messages, notes = link_worktree(umbrella, worktree, args.check)
+                problems.extend(messages)
+                for note in notes:
+                    print(note)
     for message in problems:
         print(message, file=sys.stderr)
     if args.check and not problems:
