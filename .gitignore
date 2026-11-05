@@ -5,10 +5,7 @@
 __pycache__/
 /git/
 
-# Local runtime/generated state
-.expect/
-.poster/output/
-local-extensions/
+# Local generated state
 *.bak.*
 
 # Root scratch artifacts
@@ -20,16 +17,5 @@ progress.md
 # Local documentation scratch/reference
 /docs/
 
-# Research/report artifacts pending cleanup
-analysis/
-reports/
-research/
-review/
-audits/
-config-recon/
-readonly-research/
-fork-diagnosis/
-interrupt-investigation/
-ui/
-
+readonly-
 /auth.json

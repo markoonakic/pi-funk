@@ -10,7 +10,9 @@ Checks:
   context       context files resolve to the repo files
   tools         agent tools are on PATH
   skills-native no native skills in Pi, ~/.agents or ~/.claude
-  skills-bb     BB skill list: no provider skills; the ponytail skills exist
+  skills-bb     BB skill list: no Pi or Claude skills; the ponytail skills exist.
+                Skills of other providers and Claude account-synced skills
+                (~/.claude/skills/synced) are not ours and are ignored.
   claude-lsp    Claude LSP plugins are installed
   bb-extensions bb-extensions checkout is clean on main
 
@@ -33,6 +35,7 @@ DEFAULT_TOOLS = (
 ).split()
 DEFAULT_UMBRELLAS = ["~/metaoros", "~/spona", "~/homelab"]
 LSP_PLUGINS = ("typescript-lsp", "pyright-lsp")
+OUR_PROVIDERS = ("pi", "claude-code")
 BB_SKILLS = ("ponytail", "ponytail-audit", "ponytail-debt", "ponytail-gain", "ponytail-help", "ponytail-review")
 
 rows = []
@@ -112,6 +115,8 @@ def entries(path):
 def check_native_skills():
     for path in ("~/.pi/agent/skills", "~/.agents/skills", "~/.claude/skills"):
         found = entries(Path(path).expanduser())
+        if path == "~/.claude/skills":
+            found = [name for name in found if name != "synced"]
         add("skills-native", path, not found, f"entries: {found}" if found else "")
 
 
@@ -125,7 +130,13 @@ def check_bb_skills(project):
     except (ValueError, KeyError, TypeError):
         add("skills-bb", "bb skill list", False, (result.stderr or result.stdout).strip()[:120])
         return
-    native = sorted({s["name"] for s in skills if s.get("scope") in ("provider-user", "provider-project")})
+    synced = str(HOME / ".claude/skills/synced") + os.sep
+    native = sorted({
+        s["name"] for s in skills
+        if s.get("scope") in ("provider-user", "provider-project")
+        and s.get("provider") in OUR_PROVIDERS
+        and not str(s.get("filePath") or "").startswith(synced)
+    })
     add("skills-bb", "no harness-native skills", not native, f"native: {native}" if native else "")
     have = {s["name"] for s in skills if s.get("scope") == "bb-user"}
     missing = [name for name in BB_SKILLS if name not in have]

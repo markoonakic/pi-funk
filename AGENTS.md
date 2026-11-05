@@ -1,6 +1,6 @@
 # Project instructions for `~/.config/pi`
 
-These rules apply to this repo. They are defaults. When the user asks for something different, confirm and then do what the user asks.
+These rules apply to this repo.
 
 The shared agent rules are in `agent/AGENTS.md`. Nix links this file to `~/.pi/agent/AGENTS.md`, `~/.claude/CLAUDE.md` and `~/.codex/AGENTS.md`. The BB extras are in `bb/AGENTS.md`. Nix links this file to `~/.bb/AGENTS.md`.
 

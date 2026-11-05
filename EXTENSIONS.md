@@ -20,7 +20,7 @@ Pi also loads two built-in extensions by default: `builtin:mcp` (native MCP) and
 - Do not add skills through a package. Skills live in BB.
 - Do not list BB-native plugins here. They live in `bb-extensions`.
 - Do not start Pi with `--no-extensions`. It also disables the `packages` list.
-- Do not link `extensions/` into `~/.pi/agent`. Pi would load the gateway adapter twice.
+- Do not link `extensions/` into `~/.pi/agent`. If you link it, Pi loads the gateway adapter twice.
 
 ## Not included
 

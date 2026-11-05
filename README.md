@@ -6,8 +6,6 @@ Private and generated state does not belong here. This includes auth, sessions, 
 
 ## Topology
 
-The rules in `agent/AGENTS.md` are defaults. The user can ask for something different.
-
 There is one Pi profile: `~/.pi/agent`. Terminal Pi and BB Pi use the same binary, the same profile, the same extensions, the same MCP servers and the same context files. The old `~/.pi/bb-agent` profile does not exist.
 
 Agent config has three sources:
@@ -34,16 +32,22 @@ Home Manager (`nixos-machines`) makes these links. Each link points to this repo
 | `~/.codex/AGENTS.md` | `agent/AGENTS.md` |
 | `~/.bb/AGENTS.md` | `bb/AGENTS.md` |
 
-Do not link the `extensions/` directory into `~/.pi/agent`. Pi would find `extensions/cliproxy-models` there and also in `settings.json`, and it would load the adapter twice. `settings.json` lists the adapter with the path `~/.config/pi/extensions/cliproxy-models`. Pi expands `~`. A path relative to `settings.json` resolves from the agent directory (the link location), not from this repo, so do not use one.
+Do not link the `extensions/` directory into `~/.pi/agent`. If you link it, Pi finds `extensions/cliproxy-models` twice. Pi then loads the adapter twice.
+
+`settings.json` lists the adapter with the path `~/.config/pi/extensions/cliproxy-models`. Pi expands `~`. Do not use a path relative to `settings.json`. Pi resolves such a path from the agent directory, not from this repo.
 
 The private files stay in `~/.pi/agent` and are not in Git:
 
 - `auth.json` (empty or gateway only), `trust.json`, `sessions/`, `mcp.json`, `mcp-auth.json`
 - `cliproxy-api-key` (the gateway key that `models.json` reads), `cliproxy-model-catalog.json`
 - `web-search.json` (Web Access routing; it only names environment variables)
-- the package stores `npm/` and `git/`, and the `fff/` data
+- the package stores `npm/` and `git/`
+- the `fff/` data (the FFF databases `frecency` and `history`)
+- `lens/config.json` (Nix writes it; see Environment)
 
-`trust.json` holds one entry for each own umbrella directory (for example the spona and metaoros directories). Pi trust is inherited by child directories. Do not add an entry for the home directory.
+`trust.json` holds one entry for each own umbrella directory (for example the spona and metaoros directories). Child directories inherit Pi trust. Do not add an entry for the home directory.
+
+`pi-fff.json` has only the FFF mode. FFF uses its default databases in `~/.pi/agent/fff`. If a fff.nvim database exists, FFF uses that database first.
 
 ### Context files
 
@@ -64,8 +68,9 @@ Pi loads `builtin:mcp` and `builtin:codemode` by default. They need no entry. Do
 Settings cannot set environment variables. Nix sets them for the BB service and for login shells:
 
 - `PI_OFFLINE=1`, `PI_TELEMETRY=0`, `PI_SKIP_VERSION_CHECK=1`
-- Lens: `PI_LENS_DISABLE_LSP_INSTALL=1`, `PI_LENS_DISABLE_TOOL_INSTALL=1`, `PI_LENS_AUTO_INSTALL=0`. The Lens config file keeps format, autofix and tests off.
-- Lens needs a TypeScript package that has `tsserver.js`. TypeScript 7 has none. Nix must provide one.
+- Lens: `PI_LENS_DISABLE_LSP_INSTALL=1`, `PI_LENS_DISABLE_TOOL_INSTALL=1`, `PI_LENS_AUTO_INSTALL=0`. Nix writes the Lens config file `~/.pi/agent/lens/config.json` (the script `pi-lens-configure` does this). The file keeps format, autofix and tests off. This repo does not have the file.
+
+Lens needs a TypeScript package that has `tsserver.js`. TypeScript 7 has none. Nix must provide a package that has it.
 
 ## Gateway model discovery
 
@@ -87,7 +92,13 @@ scripts/render-mcp ~/metaoros ~/spona ~/homelab           # write
 scripts/render-mcp --check ~/metaoros ~/spona ~/homelab   # exit 1 on drift
 ```
 
-Do not edit the two output files by hand. Edit the source and run the script. Strings in the source can use `{umbrella}`. The script replaces it with the umbrella path. The script header describes the source schema. Keep secrets out of the source: it holds only commands that read secrets at run time.
+Do not edit the two output files by hand. Edit the source and run the script.
+
+Strings in the source may use `{umbrella}`. The script replaces it with the umbrella path. The script header describes the source schema.
+
+Keep secrets out of the source. It holds only commands that read secrets at run time.
+
+The `macro` server in `metaoros` is for Pi and for Claude Code on purpose. Both outputs have it.
 
 Claude Code finds a parent `.mcp.json` from nested git directories. Pi reads only `<cwd>/.pi/mcp.json`. A worktree rule must link the Pi file into each worktree.
 
@@ -104,7 +115,7 @@ cd ~/Projects/nixos-machines
 scripts/update-ai-stack
 ```
 
-The script is in `nixos-machines`. It updates Pi, BB, Claude Code and the Pi packages. Packages track npm releases and the default branches of git sources. Nothing is pinned.
+The script is in `nixos-machines`. It updates Pi, BB, Claude Code and the Pi packages. Packages follow npm releases and the default branches of git sources. Nothing is pinned.
 
 After each update, and after each change to a link or a source file, run:
 
@@ -112,7 +123,20 @@ After each update, and after each change to a link or a source file, run:
 scripts/parity-check
 ```
 
-`scripts/parity-check` only reads. It compares Claude Code and Pi: the global MCP names, the project MCP files, the context links, the tools on PATH, the skill directories, the BB skill list, the Claude LSP plugins and the `bb-extensions` checkout. It prints a table and exits with 1 when it finds a gap. Set `BB_PROJECT_ID` (or use `--bb-project`) to choose the BB project for the skill list.
+`scripts/parity-check` only reads. It compares Claude Code and Pi. It checks these items:
+
+- the global MCP names and the project MCP files
+- the context links and the tools on PATH
+- the skill directories and the BB skill list
+- the Claude LSP plugins and the `bb-extensions` checkout
+
+It prints a table. It exits with 1 when it finds a gap.
+
+The BB server must run, and you must set `BB_PROJECT_ID` (or use `--bb-project`). Without them the BB skill list check fails.
+
+The BB skill check ignores skills of other providers. It also ignores the Claude account-synced skills in `~/.claude/skills/synced`. It keeps only the `pi` and `claude-code` provider skills, `~/.pi/agent/skills`, `~/.agents/skills` and your own entries in `~/.claude/skills`.
+
+If you run the script from a worktree, use `--repo` to give the worktree path.
 
 ## Checks
 
@@ -126,7 +150,7 @@ python3 tests/check-mcp.py          # native MCP and Code Mode, throwaway agent 
 
 ## Public repo rules
 
-- Never commit secrets, auth files, tokens, sessions, caches, logs or generated state.
+- Do not commit secrets, auth files, tokens, sessions, caches, logs or generated state.
 - Do not put local machine paths into docs. Use `~`.
 - Stage explicit paths only. Do not run `git add .`.
 - Do not commit `lastChangelogVersion` as a change.
