@@ -1,224 +1,82 @@
 {
   "providers": {
-    "openai": {
+    "openai-codex": {
+      "name": "Codex",
+      "baseUrl": "http://127.0.0.1:8317/v1",
+      "api": "openai-responses",
+      "apiKey": "!cat \"$HOME/.pi/bb-agent/cliproxy-api-key\"",
+      "compat": {
+        "sessionAffinityFormat": "openai"
+      },
       "modelOverrides": {
-        "gpt-5.4": {
-          "contextWindow": 1050000,
+        "gpt-6.1-terra": {
+          "name": "GPT-6.1 Terra",
+          "reasoning": true,
+          "input": ["text", "image"],
+          "thinkingLevelMap": {
+            "off": "none",
+            "minimal": "low",
+            "low": "low",
+            "medium": "medium",
+            "high": "high",
+            "xhigh": "xhigh",
+            "max": "max"
+          },
+          "contextWindow": 1000000,
+          "maxTokens": 128000
+        },
+        "gpt-6.1-sol": {
+          "contextWindow": 1000000,
+          "maxTokens": 128000
+        },
+        "gpt-6-sol": {
+          "contextWindow": 1000000,
+          "maxTokens": 128000
+        },
+        "gpt-6-luna": {
+          "contextWindow": 1000000,
+          "maxTokens": 128000
+        },
+        "gpt-6-astra": {
+          "contextWindow": 1000000,
+          "maxTokens": 128000
+        },
+        "gpt-5.6-sol": {
+          "contextWindow": 1000000,
+          "maxTokens": 128000
+        },
+        "gpt-5.6-luna": {
+          "contextWindow": 1000000,
           "maxTokens": 128000
         }
       }
     },
-    "openai-codex": {
-      "baseUrl": "https://cliproxy.sarma.love/v1",
-      "api": "openai-responses",
-      "apiKey": "!cat \"$HOME/.pi/bb-agent/cliproxy-api-key\"",
-      "compat": {
-        "sessionAffinityFormat": "openai"
-      },
-      "models": [
-        {
-          "id": "gpt-6-astra",
-          "name": "GPT 6 Astra",
-          "reasoning": true,
-          "input": [
-            "text",
-            "image"
-          ],
-          "contextWindow": 1000000,
-          "maxTokens": 128000,
-          "thinkingLevelMap": {
-            "off": null,
-            "minimal": "low",
-            "low": "low",
-            "medium": "medium",
-            "high": "high",
-            "xhigh": "xhigh"
-          }
-        },
-        {
-          "id": "gpt-5.6-sol",
-          "name": "GPT 5.6 Sol",
-          "reasoning": true,
-          "input": [
-            "text",
-            "image"
-          ],
-          "contextWindow": 1000000,
-          "maxTokens": 128000,
-          "thinkingLevelMap": {
-            "off": null,
-            "minimal": "low",
-            "low": "low",
-            "medium": "medium",
-            "high": "high",
-            "xhigh": "xhigh"
-          }
-        },
-        {
-          "id": "gpt-5.6-luna",
-          "name": "GPT 5.6 Luna",
-          "reasoning": true,
-          "input": [
-            "text",
-            "image"
-          ],
-          "contextWindow": 1000000,
-          "maxTokens": 128000,
-          "thinkingLevelMap": {
-            "off": null,
-            "minimal": "low",
-            "low": "low",
-            "medium": "medium",
-            "high": "high",
-            "xhigh": "xhigh"
-          }
-        }
-      ]
-    },
-    "cliproxy": {
-      "baseUrl": "https://cliproxy.sarma.love/v1",
-      "api": "openai-responses",
-      "apiKey": "!cat \"$HOME/.pi/bb-agent/cliproxy-api-key\"",
-      "compat": {
-        "sessionAffinityFormat": "openai"
-      },
-      "models": [
-        {
-          "id": "deepseek/deepseek-v4.1-flash",
-          "name": "DeepSeek 4.1 Flash",
-          "reasoning": true,
-          "input": [
-            "text"
-          ],
-          "contextWindow": 1000000,
-          "maxTokens": 128000,
-          "thinkingLevelMap": {
-            "off": null,
-            "minimal": "low",
-            "low": "low",
-            "medium": "medium",
-            "high": "high"
-          }
-        },
-        {
-          "id": "z-ai/glm-5.3-flash",
-          "name": "GLM 5.3 Flash",
-          "reasoning": true,
-          "thinkingLevelMap": {
-            "off": null,
-            "minimal": "low",
-            "low": "low",
-            "medium": "high",
-            "high": "high",
-            "xhigh": "max",
-            "max": "max"
-          },
-          "input": [
-            "text",
-            "image"
-          ],
-          "contextWindow": 1000000,
-          "maxTokens": 131072
-        }
-      ]
-    },
     "antigravity": {
       "name": "Antigravity",
-      "baseUrl": "https://cliproxy.sarma.love/v1",
+      "baseUrl": "http://127.0.0.1:8317/v1",
       "api": "openai-responses",
       "apiKey": "!cat \"$HOME/.pi/bb-agent/cliproxy-api-key\"",
       "compat": {
         "sessionAffinityFormat": "openai"
-      },
-      "models": [
-        {
-          "id": "gemini-3.8-flash-high",
-          "name": "Gemini 3.8 Flash",
-          "reasoning": true,
-          "input": [
-            "text",
-            "image"
-          ],
-          "contextWindow": 1048576,
-          "maxTokens": 65536,
-          "thinkingLevelMap": {
-            "off": null,
-            "minimal": "low",
-            "low": "low",
-            "medium": "medium",
-            "high": "high"
-          }
-        },
-        {
-          "id": "gemini-3.7-flash-high",
-          "name": "Gemini 3.7 Flash",
-          "reasoning": true,
-          "input": [
-            "text",
-            "image"
-          ],
-          "contextWindow": 1048576,
-          "maxTokens": 65536,
-          "thinkingLevelMap": {
-            "off": null,
-            "minimal": "low",
-            "low": "low",
-            "medium": "medium",
-            "high": "high"
-          }
-        },
-        {
-          "id": "gemini-3.6-flash-high",
-          "name": "Gemini 3.6 Flash",
-          "reasoning": true,
-          "input": [
-            "text",
-            "image"
-          ],
-          "contextWindow": 1048576,
-          "maxTokens": 65536,
-          "thinkingLevelMap": {
-            "off": null,
-            "minimal": "low",
-            "low": "low",
-            "medium": "medium",
-            "high": "high"
-          }
-        },
-        {
-          "id": "gemini-3.1-pro-low",
-          "name": "Gemini 3.1 Pro",
-          "reasoning": true,
-          "input": [
-            "text",
-            "image"
-          ],
-          "contextWindow": 1048576,
-          "maxTokens": 65535
-        },
-        {
-          "id": "gemini-pro-agent",
-          "name": "Gemini Pro Agent",
-          "reasoning": true,
-          "input": [
-            "text",
-            "image"
-          ],
-          "contextWindow": 1048576,
-          "maxTokens": 65535
-        },
-        {
-          "id": "ag-gemini-3-flash",
-          "name": "Antigravity Gemini 3 Flash",
-          "reasoning": true,
-          "input": [
-            "text",
-            "image"
-          ],
-          "contextWindow": 1048576,
-          "maxTokens": 65536
-        }
-      ]
+      }
+    },
+    "cliproxy-go": {
+      "name": "OpenCode Go",
+      "baseUrl": "http://127.0.0.1:8317/v1",
+      "api": "openai-responses",
+      "apiKey": "!cat \"$HOME/.pi/bb-agent/cliproxy-api-key\"",
+      "compat": {
+        "sessionAffinityFormat": "openai"
+      }
+    },
+    "cliproxy": {
+      "name": "Command Code",
+      "baseUrl": "http://127.0.0.1:8317/v1",
+      "api": "openai-responses",
+      "apiKey": "!cat \"$HOME/.pi/bb-agent/cliproxy-api-key\"",
+      "compat": {
+        "sessionAffinityFormat": "openai"
+      }
     }
   }
 }

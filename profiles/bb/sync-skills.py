@@ -2,7 +2,7 @@
 """Copy upstream Ponytail skills for BB, without symlinks or edited skill forks.
 
 Usage: python3 profiles/bb/sync-skills.py PONYTAIL_CHECKOUT BB_SKILLS_DIRECTORY
-Existing differing files are refused; back them up before explicitly replacing.
+Overwrite only the six owned skills and licenses; refuse symlinks and non-files.
 """
 
 import hashlib
@@ -24,8 +24,10 @@ def sync(source, destination):
                 raise ValueError(f"Expected original regular source file: {src}")
             if any(part.is_symlink() for part in [dst, *dst.parents]):
                 raise ValueError(f"BB skill destination must not contain symlinks: {dst}")
-            if dst.exists() and dst.read_bytes() != src.read_bytes():
-                raise ValueError(f"Back up and remove differing destination before updating: {dst}")
+            if dst.exists() and not dst.is_file():
+                raise ValueError(f"Expected regular destination file: {dst}")
+            if any(part.exists() and not part.is_dir() for part in dst.parents):
+                raise ValueError(f"Expected destination directories: {dst.parent}")
             copies.append((src, dst))
     for src, dst in copies:
         dst.parent.mkdir(parents=True, exist_ok=True)

@@ -6,6 +6,7 @@
   "defaultModel": "gpt-6-astra",
   "defaultThinkingLevel": "high",
   "packages": [],
+  "defaultTools": ["+codemode"],
   "compaction": {
     "enabled": true,
     "reserveTokens": 100000

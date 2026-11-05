@@ -3,6 +3,8 @@
 
 Uses the real Lens factory through a recording adapter, real RPC context and
 preinstalled LSP. All auth, project files, settings and Lens state are disposable.
+Set PI_TEST_SHARED_NODE_MODULES to qualify a candidate package store instead of
+live shared code. No auth, session, or tool config is copied from that store.
 """
 import json
 import os
@@ -15,11 +17,17 @@ import threading
 
 profile = Path(__file__).resolve().parent
 pi, lens, servers, *extensions = sys.argv[1:]
-with tempfile.TemporaryDirectory(prefix="bb-lens-check-") as tmp:
+with tempfile.TemporaryDirectory(prefix="bb-lens-check-", dir=os.environ.get("PI_TEST_ARTIFACTS"),
+                                 delete=not bool(os.environ.get("PI_TEST_ARTIFACTS"))) as tmp:
     root = Path(tmp)
     agent, cwd, home = root / "agent", root / "project", root / "home"
     for directory in (agent, cwd / ".pi", home):
         directory.mkdir(parents=True)
+    # The launcher uses shared installed tool code, but all fixture state is disposable.
+    (agent / "npm").mkdir()
+    shared = Path(os.environ.get("PI_TEST_SHARED_NODE_MODULES", str(Path.home() / ".pi/agent/npm/node_modules"))).resolve()
+    assert (shared / "@aliou/pi-processes/extensions/processes/index.ts").is_file(), shared
+    (agent / "npm/node_modules").symlink_to(shared, target_is_directory=True)
     (agent / "settings.json").write_text((profile / "settings.json").read_text())
     (agent / "web-search.json").write_text('{"workflow":"none","allowBrowserCookies":false}')
     (agent / "mcp.json").write_text('{"mcpServers":{}}')
@@ -50,7 +58,7 @@ export default async function(pi) {
   pi.registerCommand("probe-lens", { handler: async (_, ctx) => {
     const call = (name, args) => tools.get(name).execute("fixture-" + name, args, AbortSignal.timeout(25000), undefined, ctx);
     const before = pi.getActiveTools();
-    const diagnostics = await call("lsp_diagnostics", {path:"example.ts", serverScope:"primary", waitMs:15000});
+    const diagnostics = await call("lens_diagnostics", {source:"lsp", scope:"paths", paths:["example.ts"], serverScope:"primary", waitMs:15000});
     await call("pi_lens_activate_tools", {tools:["lsp_navigation"]});
     const navigation = await call("lsp_navigation", {operation:"definition", path:"example.ts", line:3, symbol:"add"});
     const all = await call("lens_diagnostics", {mode:"all"});
@@ -97,7 +105,15 @@ export default async function(pi) {
         try:
             process.stdin.write('{"type":"prompt","message":"/probe-lens"}\n')
             process.stdin.flush()  # Keep RPC stdin open until ctx.shutdown().
-            output = process.stdout.read()
+            lines = []
+            for line in process.stdout:
+                lines.append(line)
+                event = json.loads(line) if line.startswith("{") else {}
+                if (event.get("type") == "message_end"
+                        and event.get("message", {}).get("customType") == "lens-fixture"):
+                    break
+            output = "".join(lines)
+            stop_fixture()
             process.wait(timeout=5)
         finally:
             timer.cancel()
@@ -112,16 +128,21 @@ export default async function(pi) {
                     and m.get("message", {}).get("customType") == "lens-fixture"), None)
     assert fixture is not None, (result.returncode, result.stdout[-8000:], result.stderr[-4000:])
     data = json.loads(fixture["content"])
+    if os.environ.get("PI_TEST_ARTIFACTS"):
+        (root / "result.json").write_text(json.dumps(data, indent=2))
+        print("ARTIFACTS", root)
     assert data["trusted"] and data["mode"] == "rpc"
-    assert "lens_diagnostics" in data["before"] and "lsp_diagnostics" in data["before"]
+    assert {"lens_diagnostics", "process"}.issubset(data["before"]), data["before"]
     assert "lsp_navigation" not in data["before"] and "lsp_navigation" in data["after"]
     assert {"read", "write", "edit", "bash"}.issubset(data["after"])
     if extensions:
-        assert {"web_search", "source_check", "fetch_content", "get_search_content", "mcp", "mcpScript", "find", "grep"}.issubset(data["after"])
+        assert {"web_search", "source_check", "fetch_content", "get_search_content", "codemode", "find", "grep"}.issubset(data["after"])
+        assert not {"mcp", "mcpScript"}.intersection(data["after"])
     assert "AMBIENT_CONTEXT" not in data["prompt"]
     assert "ponytail" in data["prompt"]
     assert [s["name"] for s in data["skills"]].count("ponytail") == 1
-    assert all(s["name"] == "ponytail" or "pi-lens" in s["filePath"] for s in data["skills"]), data["skills"]
+    assert all(s["name"] == "ponytail" or "pi-lens" in s["filePath"]
+               for s in data["skills"]), data["skills"]
     assert all(path.startswith(str(agent / "lens")) for path in data["state"])
     assert any(str(d.get("code")) == "2322" for d in data["diagnostics"]["details"]["diagnostics"]), data["diagnostics"]
     assert data["navigation"]["details"].get("resultCount", 0) > 0, data["navigation"]

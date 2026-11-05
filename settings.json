@@ -19,7 +19,7 @@
       ]
     },
     "npm:@howaboua/pi-auto-trees",
-    "git:github.com/nicobailon/pi-subagents@f6d2135ec2ca4010b83b7d5ee46774176d49d1e6",
+    "git:github.com/nicobailon/pi-subagents",
     "npm:pi-web-access",
     "npm:@ff-labs/pi-fff",
     "npm:pi-rewind-hook",
@@ -47,20 +47,7 @@
       "themes": []
     },
     {
-      "source": "git:github.com/rjs/shaping-skills",
-      "extensions": [],
-      "skills": [
-        "+shaping"
-      ],
-      "prompts": [],
-      "themes": []
-    },
-    {
-      "source": "npm:pi-mcp-adapter",
-      "skills": []
-    },
-    {
-      "source": "git:github.com/herdrdev/herdr@065ef9d6a531c49fb8bee7e818ef837065b21ee9",
+      "source": "git:github.com/herdrdev/herdr@7b116c05bfda646af39d2524c54e70c751f57ee8",
       "extensions": [],
       "skills": [
         "skills/herdr/SKILL.md"
@@ -73,6 +60,9 @@
   ],
   "defaultProvider": "openai-codex",
   "defaultModel": "gpt-6-astra",
+  "defaultTools": [
+    "+codemode"
+  ],
   "compaction": {
     "enabled": true,
     "reserveTokens": 100000
@@ -96,7 +86,7 @@
     }
   },
   "hideThinkingBlock": false,
-  "lastChangelogVersion": "0.86.0",
+  "lastChangelogVersion": "1.1.0",
   "transport": "auto",
   "diffPalette": "auto",
   "diffShikiTheme": "gruvbox-dark-medium"

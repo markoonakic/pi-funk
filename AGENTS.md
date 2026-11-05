@@ -1,10 +1,12 @@
-# Project instructions for `/Users/marko/.config/pi`
+# Project instructions for `~/.config/pi`
 
-These instructions apply only when working in this repo. They are not the global Pi runtime instructions.
+These instructions apply only when working in this repo. Runtime instructions are separate: `agent/AGENTS.md` is delivered to regular Pi sessions (including Pi used through Herdr) and, through `profiles/bb/AGENTS.md` → `../../agent/AGENTS.md` and `~/.bb/AGENTS.md`, to the isolated BB profile.
 
 ## Scope
 
-This repo is the public, durable Pi config repository. It contains reviewed config, docs, local extensions, skills, themes, and migration notes. It must not absorb private or generated runtime state from `/Users/marko/.pi/agent`.
+This repo is the public, durable Pi config repository. It contains reviewed config, docs, local extensions, skills, themes, profiles, and migration notes. Regular Pi uses private runtime state under `~/.pi/agent`; BB uses the isolated `~/.pi/bb-agent` Pi profile and BB-owned state under `~/.bb`. None of that private or generated state belongs in this repo.
+
+Read `README.md` → **Canonical topology** when changing regular Pi/Herdr delivery. Read `README.md` → **Isolated BB Pi profile** and the relevant `profiles/bb/` sources when changing BB delivery; also compare `nixos-machines/modules/home/bb.nix` with the generated deployed service. A source change or successful source check is not proof that the deployed BB service changed.
 
 ## Public repo safety
 
@@ -16,9 +18,10 @@ This repo is the public, durable Pi config repository. It contains reviewed conf
 ## Config rules
 
 - Preserve live config unless a write phase explicitly approves changing it.
-- Do not edit `settings.json`, `EXTENSIONS.md`, `SKILLS.md`, extensions, skills, symlinks, or live `/Users/marko/.pi/agent` files unless the task explicitly includes them.
+- Do not edit `settings.json`, `EXTENSIONS.md`, `SKILLS.md`, extensions, skills, symlinks, or live state under `~/.pi` or `~/.bb` unless the task explicitly includes them.
+- Keep BB-native plugins such as Groups in `bb-extensions`; do not add them to Pi settings or extension catalogs.
 - Do not commit `lastChangelogVersion` as meaningful config or as a standalone/noise change.
-- Do not add new absolute `/Users/marko/Projects/...` package paths except to document existing blockers. Prefer npm, git, public package sources, or untracked local overrides.
+- Keep machine-specific absolute project paths and temporary legacy browser-migration instructions out of public docs. Prefer npm, git, public package sources, or untracked local overrides.
 
 ## Documentation rules
 
@@ -28,6 +31,6 @@ This repo is the public, durable Pi config repository. It contains reviewed conf
 
 ## Work process
 
-- Use subagents for non-trivial research, planning, implementation, review, validation, or cleanup.
+- Use subagents for non-trivial research, planning, implementation, review, validation, or cleanup, with one writer per worktree.
 - Before committing, validate JSON files that changed, review the scoped diff, run a secret-oriented grep over staged content, and confirm no generated/runtime files are staged.
 - Prefer small commits with explicit paths. Do not stage, commit, or push unless the user approves that phase.

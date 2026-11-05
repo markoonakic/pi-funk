@@ -9,5 +9,8 @@
   "intercomBridge": {
     "mode": "always"
   },
-  "maxSubagentSpawnsPerSession": 999999
+  "maxSubagentSpawnsPerSession": 999999,
+  "modelExclusions": {
+    "defaultTtlMs": 1
+  }
 }
