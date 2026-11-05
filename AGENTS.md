@@ -1,36 +1,50 @@
 # Project instructions for `~/.config/pi`
 
-These instructions apply only when working in this repo. Runtime instructions are separate: `agent/AGENTS.md` is delivered to regular Pi sessions (including Pi used through Herdr) and, through `profiles/bb/AGENTS.md` → `../../agent/AGENTS.md` and `~/.bb/AGENTS.md`, to the isolated BB profile.
+These rules apply to this repo. They are defaults. When the user asks for something different, confirm and then do what the user asks.
+
+The shared agent rules are in `agent/AGENTS.md`. Nix links this file to `~/.pi/agent/AGENTS.md`, `~/.claude/CLAUDE.md` and `~/.codex/AGENTS.md`. The BB extras are in `bb/AGENTS.md`. Nix links this file to `~/.bb/AGENTS.md`.
 
 ## Scope
 
-This repo is the public, durable Pi config repository. It contains reviewed config, docs, local extensions, skills, themes, profiles, and migration notes. Regular Pi uses private runtime state under `~/.pi/agent`; BB uses the isolated `~/.pi/bb-agent` Pi profile and BB-owned state under `~/.bb`. None of that private or generated state belongs in this repo.
+This repo is the public source for the one native Pi profile (`~/.pi/agent`), the shared agent rules, the gateway adapter, the MCP render script and the parity check. Private and generated state does not belong here. Read `README.md` before you change links, settings or the MCP files.
 
-Read `README.md` → **Canonical topology** when changing regular Pi/Herdr delivery. Read `README.md` → **Isolated BB Pi profile** and the relevant `profiles/bb/` sources when changing BB delivery; also compare `nixos-machines/modules/home/bb.nix` with the generated deployed service. A source change or successful source check is not proof that the deployed BB service changed.
+A change in this repo does not change the machine. Nix makes the links. A source change is not proof that the live config changed.
 
 ## Public repo safety
 
-- Never commit secrets, auth files, OAuth tokens, sessions, caches, run history, logs, account-router state/cache, package caches, or generated runtime state.
-- Treat account identifiers and local machine paths as sensitive in public docs unless explicitly required as blockers.
+- Do not commit secrets, auth files, tokens, sessions, caches, run history, logs, package stores or generated state.
+- Treat account names and local machine paths as private in docs. Use `~`.
 - Keep `.pi/` ignored.
-- Do not run `git add .`; stage explicit paths only.
+- Stage explicit paths only. Do not run `git add .`.
 
 ## Config rules
 
-- Preserve live config unless a write phase explicitly approves changing it.
-- Do not edit `settings.json`, `EXTENSIONS.md`, `SKILLS.md`, extensions, skills, symlinks, or live state under `~/.pi` or `~/.bb` unless the task explicitly includes them.
-- Keep BB-native plugins such as Groups in `bb-extensions`; do not add them to Pi settings or extension catalogs.
-- Do not commit `lastChangelogVersion` as meaningful config or as a standalone/noise change.
-- Keep machine-specific absolute project paths and temporary legacy browser-migration instructions out of public docs. Prefer npm, git, public package sources, or untracked local overrides.
+- Do not change live config under `~/.pi`, `~/.claude`, `~/.codex` or `~/.bb` unless the task includes it.
+- Do not use version pins or commit pins in `settings.json`, unless a tool forces one.
+- Keep BB-native plugins in `bb-extensions`. Do not add them to `settings.json`.
+- Do not add skills to this repo. BB holds the skills.
+- Do not commit `lastChangelogVersion` as a change.
+- Do not put copies of BB core files in this repo. Do BB core work in the BB core clone.
+- Do not delete `.pi/` in this repo before you check that no package store in it is in use.
 
 ## Documentation rules
 
-- Keep `README.md`, `EXTENSIONS.md`, and `SKILLS.md` aligned with intentional durable config changes.
-- Put canonical config architecture decisions in tracked repo docs such as `README.md`, not in ignored scratch files.
-- Root scratch files such as `context.md`, `research.md`, `plan.md`, `progress.md`, and `docs/` are not durable committed documentation.
+- Keep `README.md` and `EXTENSIONS.md` correct when you change durable config.
+- Put architecture decisions in `README.md`. Do not put them in scratch files.
+- Put design notes, plans and mockups in the repo they describe, or in `$BB_THREAD_STORAGE`. Do not put them in the repo root.
+- Track every file that the docs or the code name. Run `git status` before you finish a task. Report untracked files that the docs need.
+- Ignore `__pycache__/` and `/git/`.
+- Write docs and rules in ASD-STE100 Simplified Technical English.
 
 ## Work process
 
-- Use subagents for non-trivial research, planning, implementation, review, validation, or cleanup, with one writer per worktree.
-- Before committing, validate JSON files that changed, review the scoped diff, run a secret-oriented grep over staged content, and confirm no generated/runtime files are staged.
-- Prefer small commits with explicit paths. Do not stage, commit, or push unless the user approves that phase.
+- Use a BB workflow for non-trivial research, planning, implementation, review or validation. Use one writer for each worktree.
+- Before a commit: validate changed JSON files, review the scoped diff, run a secret grep on the staged diff, and check that no generated or runtime file is staged.
+- Make small commits with explicit paths. Commit or push only when the user approves.
+- Run `scripts/parity-check` and the checks in `README.md` after a change to settings, links or MCP sources.
+
+## Worktrees
+
+- Put worktrees in `~/Projects/worktrees/` or in the worktree folder of the project. Do not use `/tmp`.
+- After the merge, remove the worktree and your own branch. Then run `git worktree prune`.
+- Delete only your own merged branches. Keep the branches of other people and bots.

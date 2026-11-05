@@ -1,298 +1,133 @@
 # Pi config
 
-`~/.config/pi` is the canonical public Git repo for reviewed, durable Pi configuration. The private Pi runtime root remains `~/.pi/agent`; the repo must not be moved there.
+`~/.config/pi` is the public Git repo for the durable Pi and agent config of this machine. It has the source for one native Pi profile. It also has the shared agent rules, the MCP render script and the parity check.
 
-## Prepared Pi 1.4 cutover (2026-10-26)
+Private and generated state does not belong here. This includes auth, sessions, trust data, package stores, caches and logs.
 
-Source preparation is not deployment. The audit found Pi **1.1.0** and BB
-**0.46.1** running. The approved targets are Pi **1.4.0**, Subagents **0.83.0**,
-Goal **0.6.1**, and BB **0.47.1**. Package stores and copied BB skills have not
-been updated by this source change. Nix remains the owner of Pi and BB; retain
-Node **>=24** for Goal, including when using Pi's upstream Nix package.
+## Topology
 
-The Subagents declaration now tracks upstream instead of the old 0.67 pin.
-**Do not start or reload regular Pi with online package reconciliation before
-the coordinated cutover.** Its settings link points here. Current Subagents
-requires Pi >=1.2; old Goal does not handle custom-message starts in new Pi.
-Update core, Subagents and Goal together with the candidate Pi executable.
-The reviewed Subagents revision is `d9c5ca29d881ee173681cafb66af1cc774285276`;
-tracking the default branch is not a claim that later commits are qualified.
-The archived, explicitly obsolete Shaping Skills source is removed. Herdr's
-skill-only pin and all retained resource filters remain unchanged.
+The rules in `agent/AGENTS.md` are defaults. The user can ask for something different.
 
-The intended single command is `scripts/update-ai-stack` in the Nix owner
-repository. Run it only from an independent terminal, after source and candidate
-checks pass. Stop BB and close Pi before changing their shared package stores.
-Do not activate unrelated dirty Nix changes. The command must report failed or
-held updates rather than restart an old core with partially updated packages.
-No backup process, rollback script, or automatic commit is required. Lens
-**4.4.5** supports Pi **>=0.86.1 <1.5.0**; recheck this before later core updates.
+There is one Pi profile: `~/.pi/agent`. Terminal Pi and BB Pi use the same binary, the same profile, the same extensions, the same MCP servers and the same context files. The old `~/.pi/bb-agent` profile does not exist.
 
-## Canonical topology
+Agent config has three sources:
 
-The live topology uses selective links; Home Manager declares them on disko, while the Mac currently uses equivalent links.
+| Source | What it holds |
+| --- | --- |
+| `~/.config/pi` (this repo) | Agent rules, Pi settings, Pi models, the gateway adapter, scripts |
+| BB (`~/.bb/skills`, `<project>/.bb/skills`) | All skills. No harness has its own skills. |
+| `~/Projects/nixos-machines` | The links, the packages, the global MCP servers, the update script |
 
-- `~/.pi/agent/settings.json` → `~/.config/pi/settings.json`
-- `~/.pi/agent/models.json` → `~/.config/pi/models.json`
-- `~/.pi/agent/keybindings.json` → `~/.config/pi/keybindings.json`
-- `~/.pi/agent/extensions` → `~/.config/pi/extensions`
-- `~/.pi/agent/skills` → `~/.config/pi/skills`
-- `~/.pi/agent/themes` → `~/.config/pi/themes`
-- `~/.pi/agent/AGENTS.md` → `~/.config/pi/agent/AGENTS.md`
+Edit the source, not the copy.
 
-`~/.config/pi` must exist before Home Manager activation. `prompts/` should be linked by the same selective pattern only if that target is added to this repo; it is currently absent and unmanaged.
+### What Nix links
 
-`~/.pi/settings.json` must not exist. Home Manager activation fails rather than deleting it. A project-local `.pi/settings.json` is only for an intentional project override, not global configuration.
+Home Manager (`nixos-machines`) makes these links. Each link points to this repo with an out-of-store symlink.
 
-Pi may update `lastChangelogVersion` in tracked `settings.json`. This is harmless bookkeeping: Pi records which release changelog has already been shown, and the repository appears dirty only because the live settings file is also Git-tracked. Do not commit that field as meaningful config or as a standalone/noise change. Host-local sidecars in otherwise linked directories are ignored by Git and remain machine-specific.
+| Link | Target in this repo |
+| --- | --- |
+| `~/.pi/agent/settings.json` | `settings.json` |
+| `~/.pi/agent/models.json` | `models.json` |
+| `~/.pi/agent/pi-fff.json` | `pi-fff.json` |
+| `~/.pi/agent/AGENTS.md` | `agent/AGENTS.md` |
+| `~/.claude/CLAUDE.md` | `agent/AGENTS.md` |
+| `~/.codex/AGENTS.md` | `agent/AGENTS.md` |
+| `~/.bb/AGENTS.md` | `bb/AGENTS.md` |
 
-On Home Manager-managed hosts, `~/.pi/agent/models.json` may be a generated store symlink; verify `readlink -f ~/.pi/agent/models.json` resolves to this repo file. If it does not, apply the existing reviewed Home Manager activation path; do not replace the symlink manually.
+Do not link the `extensions/` directory into `~/.pi/agent`. Pi would find `extensions/cliproxy-models` there and also in `settings.json`, and it would load the adapter twice. `settings.json` lists the adapter with the path `~/.config/pi/extensions/cliproxy-models`. Pi expands `~`. A path relative to `settings.json` resolves from the agent directory (the link location), not from this repo, so do not use one.
+
+The private files stay in `~/.pi/agent` and are not in Git:
+
+- `auth.json` (empty or gateway only), `trust.json`, `sessions/`, `mcp.json`, `mcp-auth.json`
+- `cliproxy-api-key` (the gateway key that `models.json` reads), `cliproxy-model-catalog.json`
+- `web-search.json` (Web Access routing; it only names environment variables)
+- the package stores `npm/` and `git/`, and the `fff/` data
+
+`trust.json` holds one entry for each own umbrella directory (for example the spona and metaoros directories). Pi trust is inherited by child directories. Do not add an entry for the home directory.
+
+### Context files
+
+- `agent/AGENTS.md` is the core file. Pi, Claude Code and Codex read it through the links above.
+- `bb/AGENTS.md` holds only the BB extras (workflows, child threads, memory scopes). BB reads it as `~/.bb/AGENTS.md`.
+- Each project has one `AGENTS.md`. Claude Code reads it through the setting `instructionFiles: claude-md-and-agents-md`. Nix sets this setting.
+
+## Settings
+
+`settings.json` has the one Pi profile. It declares six packages. There are no version pins and no commit pins. See [EXTENSIONS.md](EXTENSIONS.md) for the reason for each package.
+
+Pi loads `builtin:mcp` and `builtin:codemode` by default. They need no entry. Do not start Pi with `--no-extensions`: this switch also disables the `packages` list.
+
+`defaultProjectTrust` is `never`. Project packages and project MCP files load only in trusted directories.
+
+### Environment that Nix sets
+
+Settings cannot set environment variables. Nix sets them for the BB service and for login shells:
+
+- `PI_OFFLINE=1`, `PI_TELEMETRY=0`, `PI_SKIP_VERSION_CHECK=1`
+- Lens: `PI_LENS_DISABLE_LSP_INSTALL=1`, `PI_LENS_DISABLE_TOOL_INSTALL=1`, `PI_LENS_AUTO_INSTALL=0`. The Lens config file keeps format, autofix and tests off.
+- Lens needs a TypeScript package that has `tsserver.js`. TypeScript 7 has none. Nix must provide one.
 
 ## Gateway model discovery
 
-The local `extensions/cliproxy-models/` adapter discovers the gateway's available
-chat models for **Codex**, **Antigravity**, **OpenCode Go**, and **Command Code**.
-Standalone Pi loads it normally; BB's launcher selects it explicitly. Internal
-provider IDs stay `openai-codex`, `antigravity`, `cliproxy-go`, and `cliproxy`.
-Model names stay clean. BB Custom UI's frontend content script formats the
-native picker source qualifier with the friendly provider name; BB core and
-routing IDs are unchanged. Disabling that UI plugin restores the raw qualifier.
-Overlapping models remain distinct routes. Muse Spark is hidden from both Go
-and Command Code; no account is removed.
+The adapter `extensions/cliproxy-models/` finds the chat models of the CLIProxyAPI gateway for Codex, Antigravity, OpenCode Go and Command Code. It runs at startup. The command `/gateway-models-refresh` refreshes an existing runtime. See [the adapter documentation](extensions/cliproxy-models/README.md).
 
-`models.json` and the isolated BB copy now contain provider connection settings
-and reviewed Codex `modelOverrides`. Model arrays are no longer needed.
-GPT-6.1 Terra uses the same 1,000,000 context and 128,000 output override as the
-other configured Codex models. Its published reasoning map and image support
-are explicit overrides because the Nix-managed Pi 1.4 catalog predates Terra.
-Remove those capability overrides once the installed catalog supplies them;
-retain the deliberate context/output override. Pi catalog metadata and the
-adapter's reviewed gateway compatibility metadata supply other defaults. Unknown
-models use conservative client defaults, not guessed upstream maxima. The private per-profile gateway
-key and cached model inventory never belong in Git.
+`models.json` holds the provider connection settings and the reviewed Codex model overrides. Its key command reads `~/.pi/agent/cliproxy-api-key`.
 
-Discovery runs at startup. Use `/gateway-models-refresh` in an existing Pi
-runtime. BB also has a separate model-picker cache of up to ten minutes. New
-runtimes receive extension changes; do not reload a coordinating session during
-work. See [the adapter documentation](extensions/cliproxy-models/README.md) for
-source mapping, cache behavior, metadata boundaries, and credential-free tests.
+## MCP
 
-## Isolated BB Pi profile
+Global servers come from `nixos-machines` (`modules/home/mcp.nix`). Activation writes them into the Claude user scope and into `~/.pi/agent/mcp.json`. Codex has no MCP.
 
-`profiles/bb/settings.json` defines a separate Pi profile at `~/.pi/bb-agent`. Its private settings are a writable copy, not a link to standalone settings. Pi authentication, model configuration, and runtime state stay separate; Pi auth stores are never copied or linked. Tool credentials may use explicit host-local references as documented below. Existing Herdr/Pi configuration remains unchanged.
+Project servers come from one source file for each umbrella directory: `<umbrella>/mcp.servers.json`. The script `scripts/render-mcp` renders it into two files:
 
-The BB Home Manager module in `nixos-machines/modules/home/bb.nix` selects the Nix-managed Pi executable through `profiles/bb/launch.py`. `--no-extensions` disables automatic discovery, not explicitly selected `--extension` entries. This keeps standalone/Herdr TUI extensions out of BB. The reviewed launcher explicitly selects Web Access, FFF, native Codex compaction, `builtin:codemode`, and `builtin:mcp`; BB also injects its generated bridge extensions. The mutable launcher adds Pi Processes core and the local gateway model-discovery adapter. It resolves the Web Access package through its manifest, so published `dist/` entries work without loading the old source entry. Account Router, RPIV Todo, and Pi Processes terminal log/dock overlays are not selected. Pi skill, prompt-template, theme and context-file discovery remain disabled; BB's own agent instructions and skills are separate.
-
-Native Code Mode is additive: `defaultTools: ["+codemode"]` keeps ordinary tools available. Its built-in identifier belongs directly in `bridgeArgs`, not the file-based `toolEntries` readability checks. Native MCP and Code Mode are selected explicitly by the deployed Home Manager unit; the 2026-10-26 service check found no drop-ins. The launcher still removes managed adapter paths from older bridge arguments. Existing Pi runtimes keep their loaded tools until they exit.
-
-The launcher adds **Pi Lens only at approved exact working directories**, listed in private `~/.pi/bb-agent/lens-projects.json` (an array of absolute paths). Missing lists deny trust. Nested directories and managed worktrees need their own deliberate entry; symlink aliases resolve to the same directory. Lens-approved entries receive Pi's `--approve`, including permission to honor project settings. Native MCP project approval is separate: an exact canonical directory mapped to `true` in the BB profile's native `trust.json` also receives `--approve`, but does not select Lens. Parent trust does not extend the launcher's exact-path policy. Other directories receive `--no-approve`, even when Pi would otherwise auto-trust a resource-free directory. This is a startup policy, not a filesystem sandbox. Review project-local configuration before adding a directory.
-
-Lens reuses the canonical installed `npm:pi-lens` code at `~/.config/pi/.pi/npm/node_modules/pi-lens/dist/index.js` (installed at the 2026-10-26 audit: **4.3.0**; prepared target: **4.4.5**), not standalone Lens state. Keep that package installed and re-run qualification after updating it. `PI_LENS_HOME`, `PILENS_DATA_DIR` and `PI_LENS_CONFIG_PATH` point inside `~/.pi/bb-agent/lens`. The BB service provisions TypeScript and its language server through Nix. Interactive/automatic tool installation is disabled. This first diagnostics/navigation slice disables automatic formatting, autofix and test running via explicit Lens flags; deliberate tool calls remain available. Other languages need their servers provisioned separately.
-
-`profiles/bb/AGENTS.md` is a relative symlink to `../../agent/AGENTS.md`, and `~/.bb/AGENTS.md` keeps the existing Home Manager link to that repo path. BB therefore uses the same standalone global agent policy, including the orchestrator default, allowed Flash/Luna/Sol/Astra models, and Simplified Technical English. BB resource and authentication isolation remains separate; this policy change does not merge profiles or state. New sessions receive the new policy; existing sessions are not hot-reloaded.
-
-Pi startup network checks and telemetry are disabled. `PI_OFFLINE=1` does not prohibit later model requests. Profile separation is not a sandbox: both processes retain the user's filesystem access, and BB thread environment overrides remain authoritative. BB owns its sessions under `~/.bb/pi-bridge-sessions`; do not share them with standalone Pi. Keep one writer per worktree across both systems.
-
-### Headless tool parity
-
-The selected shared code is Web Access **0.35.0**, Pi Processes **0.13.1** core, FFF **0.11.0**, and the reviewed `pi-zza` native-compaction source. Lens **4.3.0** remains selected only at approved exact directories. MCP uses the Nix Pi core's native implementation in both profiles (installed **1.1.0**, prepared target **1.4.0**). The legacy adapter package declarations and native-MCP exclusions are removed. Server settings and OAuth state remain profile-specific.
-
-Earlier qualification record: Pi **1.0.2** was tested with the full BB selection in real RPC mode, including a native Code Mode call, FFF search, process listing, MCP status/scripting, Lens diagnostics and definition navigation. The complete standalone profile also passed an isolated startup check with unchanged settings. These checks use a local deterministic model fixture, not real credentials or a paid provider. Activation, real provider authentication, UI rendering, and resumed live threads require separate post-activation checks.
-
-- **Web Access:** the private `web-search.json` uses the approved Exa → Parallel MCP → Gemini route, retains its browser-cookie opt-in/profile and HTTP → Firecrawl fetch policy, and keeps `workflow: "none"`. Like standalone, the Firecrawl key uses the supported `$FIRECRAWL_API_KEY` environment reference, not a copied token or command. Presence-only checks found no nonempty key in BB's effective environment or systemd provisioning; that optional backend is unavailable until separately provisioned. Hosted-fetch restrictions and cache-only Firecrawl behavior are unchanged. Real provider/cookie access remains untested; the configured route is not Codex-backed search. Explicit OpenAI searches use the BB Pi registry/auth path.
-- **MCP:** Native Pi reads `<agent-dir>/mcp.json` and the trusted exact-cwd `.pi/mcp.json`. It does not discover root `.mcp.json` or parent project files. A project can alias a credential-free shared file through `.pi/mcp.json`; private bearer-header commands stay in each agent profile. Personal servers are disabled globally and enabled only through reviewed project overrides. Native Code Mode replaces `mcp` and `mcpScript`: discover tools with `searchTools()` and call `tools.mcp__<server>__<tool>()`. Results are MCP `CallToolResult` objects, not adapter wrappers. Native OAuth uses each profile's `mcp-auth.json`; old adapter credentials are preserved but not silently copied or decrypted. Native MCP connects every enabled server at startup and does not provide the adapter's Apps, sampling, elicitation, prompt-template, or Tasks features. Web Access's Parallel MCP provider is independent of the removed adapter.
-- **FFF:** `override` registers FFF as BB's `find`/`grep` tools without terminal autocomplete. This installed version leaves multi-grep off unless `PI_FFF_MULTIGREP=1`, despite README examples. Explicit frecency/history paths stay inside the BB profile, avoiding implicit Neovim history reuse.
-- **RPIV Todo:** remains installed for standalone Pi, but the current BB launcher does not select it. This update does not add it. BB Custom UI's optional Todo renderer is not proof that the Pi `todo` tool is loaded.
-- **Pi Processes:** the launcher loads the shared package's `extensions/processes/index.ts`. The `process` tool supports background process start/list/output/write/stop/update/clear. Terminal log and dock overlays are not loaded in BB. New Pi runtimes receive this selection; existing runtimes are not reloaded.
-- **Native compaction:** explicitly loaded, preserving its Codex-only event channel and portable-summary fallback. Account Router is not part of BB's current selection. BB settings match standalone automatic compaction (`enabled: true`, `reserveTokens: 100000`). Pi's BB-profile fallback is `openai-codex` / `gpt-6-astra` / `high`, and the BB-only model file contains reviewed Codex context/output overrides and the Terra capability override described above. BB's explicit thread choice and remembered per-project execution defaults take precedence. This project's stored BB choice remains `pi` / `openai-codex/gpt-6-astra` / `xhigh`: BB 0.41.0 exposes only a read API, and it remembers a new app-composer selection when that thread is created, so changing it to `high` without creating a paid thread is not supported. Existing thread selections stay unchanged. No paid thread, real model request, or compaction request was used for validation.
-
-### Updating BB's shared extension packages
-
-BB's Pi package list is empty. Its explicit shared code comes from the regular
-profile and the Pi config project's Lens package. Updating the BB profile does
-not update these tools. Native MCP and Code Mode ship with the Nix Pi core.
-
-Use the global and exact-project commands in [Extension updates](#extension-updates)
-with the absolute candidate Pi executable. First close regular Pi and stop BB
-from an independent terminal. Inspect managed Git stores for source edits or
-local-only commits; Pi's updater resets and cleans these stores. Stop on
-unapproved changes, rather than discard them. The audited active `pi-zza` source
-matches upstream and has no tracked source overlay; an untracked generated lock
-file is not an overlay to restore. The gateway adapter remains repo-owned.
-
-Verify package versions and run candidate launcher/MCP/Lens checks. Start fresh
-BB Pi children only after the coordinated core and package cutover.
-
-### Manual updates
-
-The BB Maintenance dashboard, sensors, watchdog, and daily extension monitor
-are removed. No maintenance automation is installed. Check and update packages
-manually with the commands above. Updates, builds, and activation still need
-explicit approval.
-
-### Ponytail skills
-
-BB discovers real skill directories under `~/.bb/skills`; symlinks are not supported. Copy the six original Ponytail skills and their MIT license from the canonical installed upstream checkout:
+- `<umbrella>/.mcp.json` for Claude Code (`headersHelper` for tool keys)
+- `<umbrella>/.pi/mcp.json` for Pi (a header value of the form `!<command>`)
 
 ```bash
-python3 profiles/bb/sync-skills.py \
-  "$HOME/.config/pi/.pi/git/github.com/DietrichGebert/ponytail" "$HOME/.bb/skills"
-bb skill list --json
+scripts/render-mcp ~/metaoros ~/spona ~/homelab           # write
+scripts/render-mcp --check ~/metaoros ~/spona ~/homelab   # exit 1 on drift
 ```
 
-The copier updates only the six named `SKILL.md` files and their licenses in place. It refuses source-file symlinks, destination symlinks (including ancestors), and non-regular destination files. It validates the full copy list first and leaves unrelated skills and extra files untouched. Run it only during offline cutover, after updating the project's Ponytail checkout; the source preparation does not copy runtime skills. Skill bodies remain upstream-owned, not another local fork. Select/invoke Ponytail in BB; this does not install Pi's persistent mode extension or implement its TUI commands. Upstream help may describe controls for other hosts; BB invocation and selection apply here.
+Do not edit the two output files by hand. Edit the source and run the script. Strings in the source can use `{umbrella}`. The script replaces it with the umbrella path. The script header describes the source schema. Keep secrets out of the source: it holds only commands that read secrets at run time.
 
-### BB naming and startup
+Claude Code finds a parent `.mcp.json` from nested git directories. Pi reads only `<cwd>/.pi/mcp.json`. A worktree rule must link the Pi file into each worktree.
 
-The BB package has no custom naming patch; its
-`BB_CUSTOM_THREAD_NAMING=true` opt-in is gone. Nix packaging and the ACP/OMP
-normalizer are separate, retained changes. New root threads follow the
-standalone `day.month-slug` convention; existing and manual titles are
-preserved. The `thread-naming` plugin in `bb-extensions` owns naming and needs
-no BB patch. A real Pi-backed thread passed automatic and forced naming, and the
-naming worker was deleted after each run, on 2026-09-20.
+## Skills
 
-With the preserved `JITI_FS_CACHE=false` guard, a cold approved Lens/tools launch
-took 42 seconds. The bundled Pi provider therefore uses its existing readiness
-budget (default 60 seconds) for the initial `get_state` request; ordinary requests
-keep their 30-second timeout. This avoids disabling tools or weakening the guard.
+BB is the only skill source. User skills are in `~/.bb/skills`. Project skills are in `<workspace>/.bb/skills` and are tracked in Git. Pi, Claude Code and Codex have no skills of their own. This repo has no skills.
 
-Lens was also qualified at the approved BB-extension checkout using real RPC,
-TypeScript diagnostics and navigation with no model or credentials. Existing
-Homelab environments were not silently approved: project trust still requires
-an explicit reviewed exact path.
+## Update flow
 
-### Qualification and activation
-
-Additional credential-free checks:
+Run the update from an independent terminal, not from a BB thread:
 
 ```bash
-PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s profiles/bb -p 'test_*.py'
-node --test profiles/bb/test_moshi_hooks.mjs profiles/bb/test_gateway_*.mjs
-python3 profiles/bb/check-mcp.py "$PI_EXECUTABLE"
-python3 profiles/bb/check-lens.py "$PI_EXECUTABLE" "$LENS_ENTRY" "$LSP_BIN_PATHS"
+cd ~/Projects/nixos-machines
+scripts/update-ai-stack
 ```
 
-The MCP check uses disposable native configuration, a local stdio server, a deterministic local model stub, and the unmodified Code Mode implementation to check discovery and tool calls without real credentials, network access, or an external model request. Live `pi mcp list` checks require saved trust in the selected profile; skipped project files are not a successful project validation.
+The script is in `nixos-machines`. It updates Pi, BB, Claude Code and the Pi packages. Packages track npm releases and the default branches of git sources. Nothing is pinned.
 
-The Lens check uses a disposable trusted fixture, actual Pi RPC and Lens tool definitions, a preinstalled TypeScript language server, and empty auth. It verifies a real type error, definition navigation, lazy tool activation preserving built-ins, explicit Ponytail skill loading, and isolated state paths. Optional trailing extension-entry arguments exercise Lens alongside the selected headless tools; this combined fixture also passed. It does not prove browser rendering or model-driven diagnostics injection.
-
-Earlier activation record: Lens and the headless-tools unit were activated on
-2026-09-07. Those fixture results are not Pi 1.4 qualification. At the
-2026-10-26 audit, BB runs 0.46.1 with Pi 1.1.0, native MCP and no service drop-in.
-Account Router is not selected. After the approved cutover, verify the live unit,
-bridge executable, fresh children and plugin health; a successful source build
-is not proof of deployment. Keep auth/state unchanged and never use real quota
-redemption or a paid request for a credential-free check.
-
-## Remaining-work decisions (2026-07-18)
-
-The extension consolidation, standalone-repository cleanup, and Herdr/Nix finalization are complete. The current state and remaining work are governed by these decisions:
-
-1. **Herdr and Nix finalization is complete.** The upstream Herdr flake input remains floating in `flake.nix` and reproducible through `flake.lock`; Herdr 0.7.4 with protocol 17 is active. The official Pi hook remains vendor/installer-managed lifecycle/session authority (the current local header reports integration 9). `@pi-zza/auto-session-name` owns one-time canonical Pi naming for unnamed root sessions, while `@pi-zza/herdr-session-name-sync` remains the separate presentation-only companion that mirrors Pi `/name` values into Herdr `display_agent` metadata. Structural restore succeeded, but only panes with valid persisted root-session references auto-resume.
-2. **Security and compatibility maintenance is complete.** Funky UI now uses `diff` 8.0.4; Dependabot workflow updates #1–#3 landed; incompatible `@types/node` #4 was closed to preserve the Node 22.19 contract; and the `pi-zza` production audit was clean. `pi-thinking-steps` remains extension-disabled because no safe official update exists; its package source follows latest. A vetted fork or removal requires separate authorization.
-3. **The private Agent Team migration and source archival are complete.** `pi-zza` PR #13 landed as `c48f94f21a5376a73d26f6bddf43fbfcdafc5b4f` from private source revision `a757fa7ccd1c9a40691e2223ae7f91a7ae1e7cef`. The result is the private, inactive, independently testable `@pi-zza/agent-team`, absent from the root `pi.extensions` and live/global config. All 27 runtime/entrypoint files and 290 approved curated docs were preserved byte-identically; seven tests were adapted to Vitest; runtime/private/raw/generated boundaries are ignored. This makes no license or publication claim. `https://github.com/markoonakic/pi-agent-team` remains private and is now archived/read-only; its default `main` remains exactly `a757fa7ccd1c9a40691e2223ae7f91a7ae1e7cef`, without deletion, transfer, publication, or history rewriting. The local source clone remains preserved and clean. Deletion or unarchival would be a separate future decision.
-4. **Moshi hardening is ignored for now.** Do not spend time on payload documentation, subagent suppression, or subprocess-error changes unless this decision is revisited.
-5. **FFF standard-tool ownership is approved only after safe research.** Research found that Pi gives the first same-name tool registration ownership of both execution and extension rendering, so load-order changes alone cannot preserve Funky UI. The safest future design is to load FFF first in `override` mode for `find`/`grep` execution, stop Funky UI from registering those two executors, and route their presentation through Funky UI's existing renderer-dispatch seam with explicit adapters/tests for FFF's different result shapes. Validate synthetic ownership/rendering tests and an isolated fresh Pi startup before changing live ownership. No ownership or configuration change has been made.
-6. **Custom Subagents remains unexposed.** Do not qualify, activate, publish, or replace Nico's active provider unless this decision is revisited.
-7. **Package follow-ups are documented but deferred.** This includes adding GPT-5.6 to Fast Mode defaults, replacing Codex Usage's private Account Router state/cache reads with a stable contract, Peon Ping timing/network/relay polish, and explicit license decisions for owner-authored packages that currently lack licenses.
-8. **Optional housekeeping is ignored.** Do not prioritize stale one-run package caches, the inactive Computer Use update, Rewind retention tuning, or `lastChangelogVersion` Git noise.
-
-New XAI Tools and unified subscription-usage proposals are feature work, not consolidation debt.
-
-## Public and private boundaries
-
-Durable public config belongs here:
-
-- `settings.json`
-- `models.json`
-- `keybindings.json`
-- `extensions/`
-- `skills/`
-- `themes/`
-- `prompts/` if used later
-- root `AGENTS.md` for this repo
-- `agent/AGENTS.md` for global runtime instructions
-- `EXTENSIONS.md` and `SKILLS.md` catalogs
-
-Private runtime state stays under `~/.pi/agent` and outside Git, including auth, sessions, trust data, package state/caches, run history, logs, account-router state/cache, and other generated runtime files. Do not manage private state or workflow settings through this repo or Home Manager.
-
-## Extension placement policy
-
-`extensions/` is the live global extension directory because `~/.pi/agent/extensions` points here. Anything loadable there can affect every Pi session.
-
-Use `extensions/` only for package config sidecars, tiny reviewed one-file hooks, and vendor/installer-managed hooks that must live in the global extension directory.
-
-Durable custom packages in `settings.json` should use npm/git sources. Local project checkouts are dev-only working copies, not public-portable global config.
-
-The reviewed `extensions/cliproxy-models/` provider adapter is also kept here:
-its metadata and tests belong to this repository, while credentials and catalog
-cache stay in the private profile. It adds no daemon or tool provider.
-
-The sole global goal driver is the `pi-codex-goal` package. It provides `/goal` and model-callable `create_goal`, `get_goal`, and `update_goal`; its state follows Pi session history across resume, fork, tree navigation, reload, and compaction. Do not load another goal driver alongside it.
-
-Use `local-extensions/` only for untracked private experiments or machine-specific hooks that should not be committed. Avoid `archived-extensions/`; Git history is the archive.
-
-## Extension updates
-
-Configured extension sources track npm releases or Git default branches without
-version suffixes. Subagents tracking is prepared for the coordinated Pi 1.4
-cutover described above, not qualified for the still-installed Pi 1.1. Keep all
-retained filters unchanged, including disabled `pi-thinking-steps` and the
-`pi-zza` ten-file allowlist (nine extensions; Funky UI has two entries). Account
-Router is not selected and the audited active `pi-zza` has no tracked source
-overlay. Do not restore historical Router/Funky patches during updates.
-
-Herdr's skill-only declaration remains pinned to host revision
-`7b116c05bfda646af39d2524c54e70c751f57ee8`. The installed skill checkout differed
-at audit time; native update reconciles it to this declaration, not upstream
-latest. Dependency versions and package locks remain package-owned.
-
-After the offline-cutover preconditions above, set `PI_EXECUTABLE` to the absolute
-candidate Nix Pi executable. These commands are not run during source preparation:
+After each update, and after each change to a link or a source file, run:
 
 ```bash
-env -u PI_OFFLINE PI_CODING_AGENT_DIR="$HOME/.pi/agent" \
-  "$PI_EXECUTABLE" update --extensions --no-approve
+scripts/parity-check
 ```
 
-This updates configured global packages and skill sources, not Pi core or
-project settings. Use the exact approved project roots listed in `EXTENSIONS.md`
-for each project package update:
+`scripts/parity-check` only reads. It compares Claude Code and Pi: the global MCP names, the project MCP files, the context links, the tools on PATH, the skill directories, the BB skill list, the Claude LSP plugins and the `bb-extensions` checkout. It prints a table and exits with 1 when it finds a gap. Set `BB_PROJECT_ID` (or use `--bb-project`) to choose the BB project for the skill list.
+
+## Checks
+
+These checks need no credentials and make no model call:
 
 ```bash
-cd "$APPROVED_PROJECT_ROOT"
-env -u PI_OFFLINE PI_CODING_AGENT_DIR="$HOME/.pi/agent" \
-  "$PI_EXECUTABLE" update npm:pi-lens --approve
-env -u PI_OFFLINE PI_CODING_AGENT_DIR="$HOME/.pi/agent" \
-  "$PI_EXECUTABLE" update git:github.com/DietrichGebert/ponytail --approve
+node --test tests/test_gateway_catalog.mjs tests/test_gateway_url.mjs
+python3 -m unittest discover -s tests -p test_gateway_runtime.py
+python3 tests/check-mcp.py          # native MCP and Code Mode, throwaway agent directory
 ```
 
-Global Matt Pocock skills also supply Spona's filter delta. Do not update an
-unused project cache as a second active owner. Copy the six BB Ponytail skills
-only after the canonical project source updates. No package update enables
-`pi-thinking-steps`, RPIV tools in BB, or inactive Computer Use.
+## Public repo rules
 
-Targets match package identity across global and project scopes; these project identities have no global overlap. `update -l` is unsupported. Native Git reconciliation resets/cleans managed stores: preserve local work and stop on unexplained dirt first. Review blocked dependency lifecycle scripts rather than approving them automatically. Use `/skill:pi-config-update audit` for inventory only; its older preparation instructions are not the coordinated cutover procedure. Use the Nix owner's update command for this cutover. Restart Pi after validation; do not reload a coordinating session mid-update.
-
-Pi core/model catalogs and the host remain Nix-managed. Bare `pi update`, `--self`, `--all`, and `--models` are outside extension maintenance.
-
-Regular Pi does not retain day-long subagent model-failure blocks. Its `extensions/subagent/config.json` sets `modelExclusions.defaultTtlMs` to `1`, the supported 1 ms expiry rather than an unsupported zero/off value. Restart Pi after changing this policy; running sessions retain their loaded policy and exclusion cache. This is separate from Account Router's provider quota cooldowns, which remain unchanged.
-
-## Public repo caveats
-
-- This repo is public.
-- Do not commit auth, sessions, trust data, package state/caches, logs, run history, account-router state/cache, generated reports, or other runtime state.
-- Do not add absolute local project paths to durable config. Use npm/git sources; keep local checkouts dev-only.
-- `docs/` is ignored local scratch/reference material, not committed canonical documentation.
-- `.poster/` is not yet classified; `.poster/output/` is generated and ignored.
-
-## Browser direction
-
-The custom shared-browser integration is retired from source. Prefer BB’s native Mac manual browser path; agent browser automation requires a compatible official release and is not promised by stable 0.42.1. Host removal still requires a reviewed maintenance activation; retained profile data is not purged.
-
-## GitHub update discipline
-
-- Do not use `git add .`; stage intentional files only.
-- Keep `README.md`, `EXTENSIONS.md`, and `SKILLS.md` aligned with durable config changes.
-- Before committing, review the scoped diff, validate changed JSON, run a secret-oriented grep over staged content, and confirm no generated/runtime files are staged.
+- Never commit secrets, auth files, tokens, sessions, caches, logs or generated state.
+- Do not put local machine paths into docs. Use `~`.
+- Stage explicit paths only. Do not run `git add .`.
+- Do not commit `lastChangelogVersion` as a change.
+- Put design notes and plans in `$BB_THREAD_STORAGE` or in the repo they describe, not in the repo root.
