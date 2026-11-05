@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { PROVIDERS, gatewayModels, modelSource, parseCatalog } from '../../extensions/cliproxy-models/catalog.mjs';
-import { gatewayMetadata } from '../../extensions/cliproxy-models/metadata.mjs';
+import { PROVIDERS, gatewayModels, modelSource, parseCatalog } from '../extensions/cliproxy-models/catalog.mjs';
+import { gatewayMetadata } from '../extensions/cliproxy-models/metadata.mjs';
 
 const rows = [
   { id: 'gpt-6-astra', owned_by: 'openai' },

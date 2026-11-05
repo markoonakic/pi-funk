@@ -1,8 +1,9 @@
 # Gateway model discovery
 
-Native Pi providers for four subscriptions routed through CLIProxyAPI. Standalone
-Pi discovers this directory through its normal extensions path. BB's isolated
-launcher selects it explicitly even though ambient extensions are disabled.
+Native Pi providers for four subscriptions routed through CLIProxyAPI.
+`settings.json` lists this directory in `packages`. Pi and BB Pi load it from
+there. Do not also link `extensions/` into the agent directory: Pi would load
+the adapter twice.
 
 | Display name | Stable Pi provider ID | Example model ID sent to the gateway |
 | --- | --- | --- |
@@ -100,9 +101,8 @@ protocol conversion and account selection.
 ## Checks
 
 ```sh
-node --test profiles/bb/test_gateway_catalog.mjs profiles/bb/test_gateway_url.mjs
-PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s profiles/bb -p test_gateway_runtime.py
-PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s profiles/bb -p test_launch.py
+node --test tests/test_gateway_catalog.mjs tests/test_gateway_url.mjs
+PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tests -p test_gateway_runtime.py
 ```
 
 The runtime check uses the actual Pi CLI, fake credentials and a cached catalog.

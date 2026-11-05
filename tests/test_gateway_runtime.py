@@ -1,5 +1,5 @@
 """Real Pi RPC checks with fake keys and a private cached catalog; no model calls.
-Run: python3 -m unittest discover -s profiles/bb -p test_gateway_runtime.py
+Run: python3 -m unittest discover -s tests -p test_gateway_runtime.py
 Requires the installed Pi CLI. Skips when it is unavailable.
 """
 import json
@@ -13,7 +13,7 @@ import threading
 import time
 import unittest
 
-ENTRY = Path(__file__).resolve().parents[2] / "extensions/cliproxy-models/index.ts"
+ENTRY = Path(__file__).resolve().parents[1] / "extensions/cliproxy-models/index.ts"
 PI = shutil.which("pi")
 
 
@@ -23,8 +23,6 @@ class GatewayRuntimeTest(unittest.TestCase):
         repo = ENTRY.parents[2]
         terra_id = "gpt-6.1-terra"
         terra = json.loads((repo / "models.json").read_text())["providers"]["openai-codex"]["modelOverrides"][terra_id]
-        bb_terra = json.loads((repo / "profiles/bb/models.json").read_text())["providers"]["openai-codex"]["modelOverrides"][terra_id]
-        self.assertEqual(terra, bb_terra)
         self.assertEqual(terra, {
             "name": "GPT-6.1 Terra", "reasoning": True, "input": ["text", "image"],
             "thinkingLevelMap": {"off": "none", "minimal": "low", "low": "low",

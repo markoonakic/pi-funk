@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { validateGatewayUrl } from '../../extensions/cliproxy-models/gateway-url.mjs';
+import { validateGatewayUrl } from '../extensions/cliproxy-models/gateway-url.mjs';
 
 test('remote TLS and the fixed local gateway are accepted', () => {
   for (const url of ['https://gateway.example/v1', 'http://127.0.0.1:8317/v1']) {

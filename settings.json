@@ -1,93 +1,38 @@
 {
-  "theme": "gruvbox",
-  "defaultThinkingLevel": "high",
-  "quietStartup": true,
-  "packages": [
-    {
-      "source": "git:git@github.com:lmilojevicc/pi-zza",
-      "extensions": [
-        "packages/auto-session-name/src/index.ts",
-        "packages/codex-native-compaction/extensions/codex-native-compaction.ts",
-        "packages/herdr-session-name-sync/src/index.ts",
-        "packages/root-resume/extensions/root-resume.ts",
-        "packages/codex-usage/extensions/codex-usage.ts",
-        "packages/funky-ui/extensions/index.ts",
-        "packages/funky-ui/extensions/funky-ui.ts",
-        "packages/working-line/src/index.ts",
-        "packages/codex-fast-mode/index.ts",
-        "packages/peon-ping/src/index.ts"
-      ]
-    },
-    "npm:@howaboua/pi-auto-trees",
-    "git:github.com/nicobailon/pi-subagents",
-    "npm:pi-web-access",
-    "npm:@ff-labs/pi-fff",
-    "npm:pi-rewind-hook",
-    "npm:@aliou/pi-processes",
-    "npm:pi-intercom",
-    {
-      "source": "npm:pi-thinking-steps",
-      "extensions": []
-    },
-    "npm:@juicesharp/rpiv-todo",
-    "npm:@juicesharp/rpiv-btw",
-    {
-      "source": "git:github.com/mattpocock/skills",
-      "extensions": [],
-      "skills": [
-        "skills/productivity/grill-me",
-        "skills/productivity/grilling",
-        "skills/productivity/handoff",
-        "skills/productivity/teach",
-        "skills/productivity/writing-for-agents",
-        "skills/productivity/wait-what",
-        "skills/productivity/to-questionnaire"
-      ],
-      "prompts": [],
-      "themes": []
-    },
-    {
-      "source": "git:github.com/herdrdev/herdr@7b116c05bfda646af39d2524c54e70c751f57ee8",
-      "extensions": [],
-      "skills": [
-        "skills/herdr/SKILL.md"
-      ],
-      "prompts": [],
-      "themes": []
-    },
-    "npm:@juicesharp/rpiv-ask-user-question",
-    "npm:pi-codex-goal"
-  ],
+  "defaultProjectTrust": "never",
+  "enableInstallTelemetry": false,
+  "enableAnalytics": false,
   "defaultProvider": "openai-codex",
   "defaultModel": "gpt-6-astra",
+  "defaultThinkingLevel": "high",
+  "packages": [
+    "npm:pi-web-access",
+    "npm:@ff-labs/pi-fff",
+    {
+      "source": "npm:@aliou/pi-processes",
+      "extensions": [
+        "extensions/processes/index.ts"
+      ],
+      "skills": []
+    },
+    {
+      "source": "git:github.com/lmilojevicc/pi-zza",
+      "extensions": [
+        "packages/codex-native-compaction/extensions/codex-native-compaction.ts"
+      ],
+      "skills": []
+    },
+    {
+      "source": "npm:pi-lens",
+      "skills": []
+    },
+    "~/.config/pi/extensions/cliproxy-models"
+  ],
   "defaultTools": [
     "+codemode"
   ],
   "compaction": {
     "enabled": true,
     "reserveTokens": 100000
-  },
-  "pi-working-line": {
-    "enabled": true,
-    "phrases": {
-      "mode": "append",
-      "verbs": []
-    },
-    "segments": {
-      "phrase": true,
-      "suffix": true,
-      "elapsed": true,
-      "thinking": true,
-      "tokens": false
-    },
-    "turnDuration": {
-      "enabled": true,
-      "thresholdMs": 30000
-    }
-  },
-  "hideThinkingBlock": false,
-  "lastChangelogVersion": "1.1.0",
-  "transport": "auto",
-  "diffPalette": "auto",
-  "diffShikiTheme": "gruvbox-dark-medium"
+  }
 }

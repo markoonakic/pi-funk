@@ -1,13 +1,20 @@
 #!/usr/bin/env python3
-"""Native MCP + Code Mode check with a local model stub. Usage: check-mcp.py PI."""
+"""Native MCP + Code Mode check with a local model stub.
+
+Usage: check-mcp.py [PI]   (default: pi from PATH)
+Uses a throwaway agent directory. It reads no real config and makes no model call.
+"""
 import json
 import os
 from pathlib import Path
 import subprocess
 import sys
+import shutil
 import tempfile
 
-pi = sys.argv[1]
+pi = sys.argv[1] if len(sys.argv) > 1 else shutil.which("pi")
+if not pi:
+    sys.exit("pi not found on PATH; pass the pi executable as the first argument")
 with tempfile.TemporaryDirectory(prefix="pi-native-mcp-check-") as tmp:
     root = Path(tmp)
     agent, project, home = root / "agent", root / "project", root / "home"
